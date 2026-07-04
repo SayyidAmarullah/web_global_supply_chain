@@ -4,16 +4,16 @@
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
-        <h4 class="fw-bold text-secondary mb-4 text-center">Sign In</h4>
+        <h4 class="fw-bold text-white mb-4 text-center">Sign In</h4>
         
         <!-- Email Address -->
         <div class="mb-4">
             <label for="email" class="form-label text-muted fw-medium fs-7 text-uppercase">Email Address</label>
             <div class="input-group">
-                <span class="input-group-text bg-light border-end-0">
-                    <span class="material-symbols-outlined fs-5 text-muted">mail</span>
+                <span class="input-group-text bg-transparent border-end-0 border-secondary text-muted">
+                    <span class="material-symbols-outlined fs-5">mail</span>
                 </span>
-                <input id="email" class="form-control bg-light border-start-0 py-2 @error('email') is-invalid @enderror" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
+                <input id="email" class="form-control bg-transparent text-white border-start-0 border-secondary py-2 @error('email') is-invalid @enderror" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="user@example.com">
             </div>
             @error('email')
                 <div class="text-danger mt-1 fs-7">{{ $message }}</div>
@@ -31,10 +31,10 @@
                 @endif
             </div>
             <div class="input-group">
-                <span class="input-group-text bg-light border-end-0">
-                    <span class="material-symbols-outlined fs-5 text-muted">lock</span>
+                <span class="input-group-text bg-transparent border-end-0 border-secondary text-muted">
+                    <span class="material-symbols-outlined fs-5">lock</span>
                 </span>
-                <input id="password" class="form-control bg-light border-start-0 py-2 @error('password') is-invalid @enderror" type="password" name="password" required autocomplete="current-password">
+                <input id="password" class="form-control bg-transparent text-white border-start-0 border-secondary py-2 @error('password') is-invalid @enderror" type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
             </div>
             @error('password')
                 <div class="text-danger mt-1 fs-7">{{ $message }}</div>
@@ -43,7 +43,7 @@
 
         <!-- Remember Me -->
         <div class="mb-4 form-check">
-            <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
+            <input id="remember_me" type="checkbox" class="form-check-input bg-transparent border-secondary" name="remember">
             <label for="remember_me" class="form-check-label text-muted fs-7">
                 {{ __('Remember me') }}
             </label>

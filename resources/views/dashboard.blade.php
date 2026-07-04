@@ -1,204 +1,217 @@
 @extends('layouts.app')
 
-@section('title', 'Global Overview')
+@section('title', 'Overview')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-end mb-4">
     <div>
-        <h2 class="fw-bold mb-1">Global Command Center</h2>
-        <p class="text-muted mb-0">Real-time overview of international logistics and supply chain risks.</p>
+        <h2 class="fw-bolder mb-1 text-secondary tracking-tight">Global Overview</h2>
+        <p class="text-muted mb-0 fs-6">Real-time intelligence on your global supply chain network.</p>
     </div>
-    <div>
-        <button class="btn btn-primary d-flex align-items-center px-4 py-2 rounded-pill shadow-sm">
-            <span class="material-symbols-outlined me-2 fs-5">add</span>
-            New Shipment
+    
+    <div class="d-flex gap-2">
+        <button class="btn btn-light bg-white border shadow-sm rounded-pill px-3 py-2 d-flex align-items-center">
+            <span class="material-symbols-outlined fs-5 me-2 text-muted">calendar_today</span>
+            <span class="fs-7 fw-medium">Last 30 Days</span>
+            <span class="material-symbols-outlined fs-5 ms-2 text-muted">expand_more</span>
+        </button>
+        <button class="btn btn-dark bg-secondary border-0 shadow-sm rounded-pill px-3 py-2 d-flex align-items-center">
+            <span class="material-symbols-outlined fs-5 me-2">download</span>
+            <span class="fs-7 fw-medium">Export Report</span>
         </button>
     </div>
 </div>
 
-<!-- Executive Summary Cards -->
+<!-- Top Section: 2x2 Metrics + Risk Radar -->
 <div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="glass-card p-4 h-100">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <p class="text-muted fw-semibold mb-1 fs-7 text-uppercase">Total Shipments</p>
-                    <h3 class="fw-bold text-secondary mb-0">12,458</h3>
-                </div>
-                <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary">
-                    <span class="material-symbols-outlined">directions_boat</span>
+    <!-- Left Column: 2x2 Metrics -->
+    <div class="col-xl-8">
+        <div class="row g-4 h-100">
+            <div class="col-md-6">
+                <div class="glass-widget p-4 widget-gradient-blue map-bg h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="metric-icon-box bg-white bg-opacity-25">
+                            <span class="material-symbols-outlined fs-3">public</span>
+                        </div>
+                        <span class="badge bg-white text-primary rounded-pill px-2 py-1 fs-7 fw-bold d-flex align-items-center">
+                            <span class="material-symbols-outlined fs-6 me-1">trending_up</span> +14%
+                        </span>
+                    </div>
+                    <p class="text-white-50 fw-semibold mb-1 fs-7 text-uppercase tracking-wider">Active Shipments</p>
+                    <h2 class="fw-bolder mb-0 display-6">12,458</h2>
                 </div>
             </div>
-            <div class="d-flex align-items-center text-success fw-medium fs-7">
-                <span class="material-symbols-outlined fs-6 me-1">trending_up</span>
-                <span>+14.5% vs last month</span>
+            
+            <div class="col-md-6">
+                <div class="glass-widget p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="metric-icon-box bg-success bg-opacity-10 text-success">
+                            <span class="material-symbols-outlined fs-3">local_shipping</span>
+                        </div>
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 fs-7 fw-bold d-flex align-items-center">
+                            <span class="material-symbols-outlined fs-6 me-1">check_circle</span> 94%
+                        </span>
+                    </div>
+                    <p class="text-muted fw-semibold mb-1 fs-7 text-uppercase tracking-wider">On-Time Delivery</p>
+                    <h2 class="fw-bolder mb-0 text-secondary display-6">3,240</h2>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="glass-widget p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="metric-icon-box bg-primary bg-opacity-10 text-primary">
+                            <span class="material-symbols-outlined fs-3">account_balance</span>
+                        </div>
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 fs-7 fw-bold d-flex align-items-center">
+                            <span class="material-symbols-outlined fs-6 me-1">trending_up</span> 8.2%
+                        </span>
+                    </div>
+                    <p class="text-muted fw-semibold mb-1 fs-7 text-uppercase tracking-wider">Cargo Value (USD)</p>
+                    <h2 class="fw-bolder mb-0 text-secondary display-6">$8.4M</h2>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="glass-widget p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="metric-icon-box bg-warning bg-opacity-10 text-warning">
+                            <span class="material-symbols-outlined fs-3">warning</span>
+                        </div>
+                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 fs-7 fw-bold d-flex align-items-center">
+                            <span class="material-symbols-outlined fs-6 me-1">arrow_upward</span> +2
+                        </span>
+                    </div>
+                    <p class="text-muted fw-semibold mb-1 fs-7 text-uppercase tracking-wider">Critical Alerts</p>
+                    <h2 class="fw-bolder mb-0 text-secondary display-6">14</h2>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="col-md-3">
-        <div class="glass-card p-4 h-100">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <p class="text-muted fw-semibold mb-1 fs-7 text-uppercase">Cargo In Transit</p>
-                    <h3 class="fw-bold text-secondary mb-0">3,240</h3>
-                </div>
-                <div class="bg-warning bg-opacity-10 p-2 rounded-3 text-warning">
-                    <span class="material-symbols-outlined">schedule</span>
-                </div>
-            </div>
-            <div class="d-flex align-items-center text-success fw-medium fs-7">
-                <span class="material-symbols-outlined fs-6 me-1">trending_up</span>
-                <span>+2.1% vs last week</span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="glass-card p-4 h-100 border-danger border-opacity-25">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <p class="text-danger fw-semibold mb-1 fs-7 text-uppercase">Risk Alerts</p>
-                    <h3 class="fw-bold text-danger mb-0">14</h3>
-                </div>
-                <div class="bg-danger bg-opacity-10 p-2 rounded-3 text-danger">
-                    <span class="material-symbols-outlined">warning</span>
-                </div>
-            </div>
-            <div class="d-flex align-items-center text-danger fw-medium fs-7">
-                <span class="material-symbols-outlined fs-6 me-1">trending_up</span>
-                <span>+4 severe weather alerts</span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="glass-card p-4 h-100">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <p class="text-muted fw-semibold mb-1 fs-7 text-uppercase">Global Revenue</p>
-                    <h3 class="fw-bold text-secondary mb-0">$8.4M</h3>
-                </div>
-                <div class="bg-success bg-opacity-10 p-2 rounded-3 text-success">
-                    <span class="material-symbols-outlined">payments</span>
-                </div>
-            </div>
-            <div class="d-flex align-items-center text-success fw-medium fs-7">
-                <span class="material-symbols-outlined fs-6 me-1">trending_up</span>
-                <span>+8.2% vs last quarter</span>
+    <!-- Right Column: Risk Radar -->
+    <div class="col-xl-4">
+        <div class="glass-widget p-4 d-flex flex-column h-100">
+            <h5 class="fw-bold mb-4 text-secondary">Risk Intelligence Radar</h5>
+            <div class="flex-grow-1 d-flex justify-content-center align-items-center" style="min-height: 250px;">
+                <canvas id="riskRadarChart"></canvas>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row g-4 mb-4">
-    <div class="col-md-8">
-        <div class="glass-card p-4 h-100">
-            <h5 class="fw-bold mb-4">Shipment Trend (Import vs Export)</h5>
-            <canvas id="shipmentTrendChart" height="100"></canvas>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="glass-card p-4 h-100">
-            <h5 class="fw-bold mb-4">Geopolitical & Weather Risks</h5>
-            <canvas id="riskDistributionChart" height="200"></canvas>
-        </div>
-    </div>
-</div>
-
+<!-- Bottom Section: Trend Chart + Table Side by Side -->
 <div class="row g-4">
-    <div class="col-md-12">
-        <div class="glass-card p-0 overflow-hidden">
-            <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0">Active Monitored Routes</h5>
-                <button class="btn btn-sm btn-outline-secondary">View All</button>
+    <!-- Logistics Volume -->
+    <div class="col-xl-5">
+        <div class="glass-widget p-4 d-flex flex-column h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0 text-secondary">Global Volume</h5>
+                <button class="btn btn-sm btn-light bg-white border rounded-pill px-3 fw-medium d-flex align-items-center">
+                    2026 <span class="material-symbols-outlined fs-6 ms-1">expand_more</span>
+                </button>
             </div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-muted fs-7 text-uppercase">
+            <div class="flex-grow-1" style="min-height: 300px;">
+                <canvas id="shipmentTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Table -->
+    <div class="col-xl-7">
+        <div class="glass-widget overflow-hidden h-100 d-flex flex-column">
+            <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-white bg-opacity-50">
+                <h5 class="fw-bold mb-0 text-secondary d-flex align-items-center">
+                    <span class="material-symbols-outlined text-primary me-2">satellite_alt</span>
+                    Live Monitored Routes
+                </h5>
+                <a href="#" class="text-decoration-none fw-medium fs-7 text-primary d-flex align-items-center">
+                    View Full Map <span class="material-symbols-outlined fs-6 ms-1">arrow_forward</span>
+                </a>
+            </div>
+            <div class="table-responsive flex-grow-1">
+                <table class="table table-custom align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th class="ps-4 fw-medium border-0">Shipment ID</th>
-                            <th class="fw-medium border-0">Origin</th>
-                            <th class="fw-medium border-0">Destination</th>
-                            <th class="fw-medium border-0">Status</th>
-                            <th class="fw-medium border-0">Risk Score</th>
-                            <th class="pe-4 text-end fw-medium border-0">Action</th>
+                            <th class="ps-4">Vessel / Shipment</th>
+                            <th>Route</th>
+                            <th>Status & ETA</th>
+                            <th class="pe-4 text-end">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="ps-4 fw-medium text-primary">#SHP-98302</td>
-                            <td>
+                            <td class="ps-4">
                                 <div class="d-flex align-items-center">
-                                    <span class="fs-4 me-2">🇨🇳</span> Shanghai Port
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="fs-4 me-2">🇺🇸</span> Los Angeles Port
-                                </div>
-                            </td>
-                            <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">In Transit</span></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="progress w-100 me-2" style="height: 6px;">
-                                        <div class="progress-bar bg-success progress-animated" style="width: 15%"></div>
+                                    <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 me-3">
+                                        <span class="material-symbols-outlined fs-5">directions_boat</span>
                                     </div>
-                                    <span class="fs-7 fw-medium text-muted">15/100</span>
+                                    <div>
+                                        <div class="fw-bold text-secondary">MSC Isabella</div>
+                                        <div class="fs-7 text-muted">SHP-98302</div>
+                                    </div>
                                 </div>
+                            </td>
+                            <td>
+                                <div class="fw-medium text-secondary"><span class="me-1">🇨🇳</span> Shanghai</div>
+                                <div class="fs-7 text-muted"><span class="material-symbols-outlined text-muted" style="font-size: 14px; vertical-align: middle;">arrow_downward</span> to Los Angeles <span class="me-1">🇺🇸</span></div>
+                            </td>
+                            <td>
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1 mb-1">On Schedule</span>
+                                <div class="fs-7 text-secondary fw-medium">Jul 12, 2026</div>
                             </td>
                             <td class="pe-4 text-end">
-                                <button class="btn btn-light btn-sm rounded-circle"><span class="material-symbols-outlined fs-6">more_vert</span></button>
+                                <button class="btn btn-sm btn-light bg-white border rounded-circle p-1 shadow-sm"><span class="material-symbols-outlined fs-5 text-secondary">visibility</span></button>
                             </td>
                         </tr>
+                        
                         <tr>
-                            <td class="ps-4 fw-medium text-primary">#SHP-98284</td>
-                            <td>
+                            <td class="ps-4">
                                 <div class="d-flex align-items-center">
-                                    <span class="fs-4 me-2">🇩🇪</span> Hamburg Port
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="fs-4 me-2">🇸🇬</span> Singapore Port
-                                </div>
-                            </td>
-                            <td><span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2">Delayed</span></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="progress w-100 me-2" style="height: 6px;">
-                                        <div class="progress-bar bg-danger progress-animated" style="width: 85%"></div>
+                                    <div class="bg-danger bg-opacity-10 text-danger p-2 rounded-3 me-3">
+                                        <span class="material-symbols-outlined fs-5">directions_boat</span>
                                     </div>
-                                    <span class="fs-7 fw-medium text-danger">85/100</span>
+                                    <div>
+                                        <div class="fw-bold text-secondary">Ever Given</div>
+                                        <div class="fs-7 text-muted">SHP-98284</div>
+                                    </div>
                                 </div>
+                            </td>
+                            <td>
+                                <div class="fw-medium text-secondary"><span class="me-1">🇩🇪</span> Hamburg</div>
+                                <div class="fs-7 text-muted"><span class="material-symbols-outlined text-muted" style="font-size: 14px; vertical-align: middle;">arrow_downward</span> to Singapore <span class="me-1">🇸🇬</span></div>
+                            </td>
+                            <td>
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-1 mb-1">Storm Warning</span>
+                                <div class="fs-7 text-danger fw-medium">Delayed (Jul 05)</div>
                             </td>
                             <td class="pe-4 text-end">
-                                <button class="btn btn-light btn-sm rounded-circle"><span class="material-symbols-outlined fs-6">more_vert</span></button>
+                                <button class="btn btn-sm btn-light bg-white border rounded-circle p-1 shadow-sm"><span class="material-symbols-outlined fs-5 text-secondary">visibility</span></button>
                             </td>
                         </tr>
+
                         <tr>
-                            <td class="ps-4 fw-medium text-primary">#SHP-98251</td>
-                            <td>
+                            <td class="ps-4">
                                 <div class="d-flex align-items-center">
-                                    <span class="fs-4 me-2">🇦🇪</span> Jebel Ali Port
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="fs-4 me-2">🇳🇱</span> Rotterdam Port
-                                </div>
-                            </td>
-                            <td><span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2">At Risk</span></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="progress w-100 me-2" style="height: 6px;">
-                                        <div class="progress-bar bg-warning progress-animated" style="width: 60%"></div>
+                                    <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-3 me-3">
+                                        <span class="material-symbols-outlined fs-5">directions_boat</span>
                                     </div>
-                                    <span class="fs-7 fw-medium text-warning">60/100</span>
+                                    <div>
+                                        <div class="fw-bold text-secondary">CMA CGM Antoine</div>
+                                        <div class="fs-7 text-muted">SHP-98251</div>
+                                    </div>
                                 </div>
+                            </td>
+                            <td>
+                                <div class="fw-medium text-secondary"><span class="me-1">🇦🇪</span> Jebel Ali</div>
+                                <div class="fs-7 text-muted"><span class="material-symbols-outlined text-muted" style="font-size: 14px; vertical-align: middle;">arrow_downward</span> to Rotterdam <span class="me-1">🇳🇱</span></div>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-2 py-1 mb-1">High Congestion</span>
+                                <div class="fs-7 text-warning fw-medium">Deviation (Jul 18)</div>
                             </td>
                             <td class="pe-4 text-end">
-                                <button class="btn btn-light btn-sm rounded-circle"><span class="material-symbols-outlined fs-6">more_vert</span></button>
+                                <button class="btn btn-sm btn-light bg-white border rounded-circle p-1 shadow-sm"><span class="material-symbols-outlined fs-5 text-secondary">visibility</span></button>
                             </td>
                         </tr>
                     </tbody>
@@ -207,36 +220,35 @@
         </div>
     </div>
 </div>
-
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if Chart is available
     if(typeof Chart !== 'undefined') {
         
-        // Shipment Trend Chart
+        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+        Chart.defaults.color = '#94a3b8'; // text-muted
+
+        // Custom Line Chart for Shipment Trend
         const ctxTrend = document.getElementById('shipmentTrendChart').getContext('2d');
         
-        // Gradient for Import
         const gradientImport = ctxTrend.createLinearGradient(0, 0, 0, 400);
-        gradientImport.addColorStop(0, 'rgba(11, 94, 215, 0.4)');
-        gradientImport.addColorStop(1, 'rgba(11, 94, 215, 0.05)');
+        gradientImport.addColorStop(0, 'rgba(11, 94, 215, 0.5)');
+        gradientImport.addColorStop(1, 'rgba(11, 94, 215, 0.0)');
         
-        // Gradient for Export
         const gradientExport = ctxTrend.createLinearGradient(0, 0, 0, 400);
-        gradientExport.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
-        gradientExport.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
+        gradientExport.addColorStop(0, 'rgba(56, 189, 248, 0.5)');
+        gradientExport.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
         new Chart(ctxTrend, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [
                     {
-                        label: 'Imports',
-                        data: [1200, 1900, 1500, 2200, 1800, 2500, 2100, 2800, 2400, 3100, 2900, 3500],
+                        label: 'Inbound',
+                        data: [12, 19, 15, 22, 18, 25],
                         borderColor: '#0B5ED7',
                         backgroundColor: gradientImport,
                         borderWidth: 3,
@@ -244,21 +256,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         pointBorderColor: '#0B5ED7',
                         pointBorderWidth: 2,
                         pointRadius: 4,
-                        pointHoverRadius: 6,
                         fill: true,
                         tension: 0.4
                     },
                     {
-                        label: 'Exports',
-                        data: [1000, 1500, 1300, 1800, 1600, 2100, 1900, 2400, 2200, 2700, 2500, 3100],
-                        borderColor: '#10B981',
+                        label: 'Outbound',
+                        data: [10, 15, 13, 18, 16, 21],
+                        borderColor: '#38BDF8',
                         backgroundColor: gradientExport,
                         borderWidth: 3,
                         pointBackgroundColor: '#fff',
-                        pointBorderColor: '#10B981',
+                        pointBorderColor: '#38BDF8',
                         pointBorderWidth: 2,
                         pointRadius: 4,
-                        pointHoverRadius: 6,
                         fill: true,
                         tension: 0.4
                     }
@@ -270,83 +280,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 plugins: {
                     legend: {
                         position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 20,
-                            font: {
-                                family: "'Poppins', sans-serif",
-                                size: 12
-                            }
-                        }
+                        align: 'end',
+                        labels: { usePointStyle: true, boxWidth: 8, padding: 10 }
                     },
                     tooltip: {
-                        backgroundColor: '#0A2540',
-                        titleFont: { family: "'Poppins', sans-serif", size: 13 },
-                        bodyFont: { family: "'Poppins', sans-serif", size: 13 },
+                        backgroundColor: 'rgba(10, 37, 64, 0.9)',
                         padding: 12,
-                        cornerRadius: 8,
-                        displayColors: true,
-                        intersect: false,
+                        cornerRadius: 12,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 13 }
                     }
                 },
                 scales: {
-                    x: {
-                        grid: { display: false, drawBorder: false },
-                        ticks: { font: { family: "'Poppins', sans-serif" } }
-                    },
+                    x: { grid: { display: false, drawBorder: false } },
                     y: {
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)',
-                            drawBorder: false,
-                            borderDash: [5, 5]
-                        },
-                        ticks: { font: { family: "'Poppins', sans-serif" } }
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false, borderDash: [5, 5] },
+                        beginAtZero: true
                     }
                 },
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
+                interaction: { mode: 'index', intersect: false }
             }
         });
 
-        // Risk Distribution Chart (Doughnut)
-        const ctxRisk = document.getElementById('riskDistributionChart').getContext('2d');
-        new Chart(ctxRisk, {
-            type: 'doughnut',
+        // Unique Radar Chart for Risk Analysis
+        const ctxRadar = document.getElementById('riskRadarChart').getContext('2d');
+        new Chart(ctxRadar, {
+            type: 'radar',
             data: {
-                labels: ['Weather Risk', 'Port Congestion', 'Geopolitical', 'Currency Fluctuations', 'Low Risk'],
+                labels: ['Weather', 'Piracy', 'Congest.', 'Currency', 'Politic.', 'Customs'],
                 datasets: [{
-                    data: [15, 25, 10, 5, 45],
-                    backgroundColor: [
-                        '#38BDF8', // Weather
-                        '#F59E0B', // Congestion
-                        '#EF4444', // Geopolitical
-                        '#8B5CF6', // Currency
-                        '#10B981'  // Low risk
-                    ],
-                    borderWidth: 0,
-                    hoverOffset: 4
+                    label: 'Global Risk Level',
+                    data: [85, 20, 65, 45, 30, 50],
+                    backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                    borderColor: '#0ea5e9',
+                    pointBackgroundColor: '#0ea5e9',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#0ea5e9',
+                    borderWidth: 2,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '75%',
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 15,
-                            font: { family: "'Poppins', sans-serif", size: 11 }
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: '#0A2540',
-                        bodyFont: { family: "'Poppins', sans-serif", size: 13 },
-                        padding: 10,
-                        cornerRadius: 8,
+                    legend: { display: false },
+                    tooltip: { backgroundColor: 'rgba(10, 37, 64, 0.9)', padding: 12, cornerRadius: 12 }
+                },
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { font: { size: 12, family: "'Plus Jakarta Sans', sans-serif", weight: '600' }, color: '#94a3b8' },
+                        ticks: { display: false, max: 100 }
                     }
                 }
             }

@@ -15,15 +15,16 @@
     
     <style>
         .auth-bg {
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            background-color: var(--secondary);
+            background-image: radial-gradient(circle at 100% 0%, rgba(14, 165, 233, 0.15) 0%, transparent 40%),
+                              radial-gradient(circle at 0% 100%, rgba(14, 165, 233, 0.05) 0%, transparent 40%);
             min-height: 100vh;
         }
         .auth-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: none;
+            background: #041326;
+            border: 1px solid rgba(14, 165, 233, 0.2);
             border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
