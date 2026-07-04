@@ -1,144 +1,245 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>{{ config('app.name', 'Global Supply Chain') }} - @yield('title', 'Command Center')</title>
-
-    <!-- Google Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
-    
-    <!-- Scripts -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Supply Chain Risk Intelligence Platform</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
-    <div class="app-container">
-        
-        <!-- Main Workspace (Moved to Left) -->
-        <main class="main-wrapper">
-            <!-- Floating Topbar -->
-            <header class="floating-topbar">
-                <div class="search-pill">
-                    <span class="material-symbols-outlined text-muted fs-5">search</span>
-                    <input type="text" placeholder="Track shipment, port, or vessel...">
-                </div>
-                
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex flex-column text-end me-2 d-none d-md-flex">
-                        <span class="fw-bold text-secondary lh-1" id="current-time">00:00:00</span>
-                        <span class="fs-7 text-muted lh-1 mt-1">UTC Time</span>
-                    </div>
-                    
-                    <button class="btn btn-white rounded-circle p-2 d-flex align-items-center position-relative shadow-sm border border-light">
-                        <span class="material-symbols-outlined text-secondary fs-5">notifications</span>
-                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-                    </button>
-                    
-                    <button class="btn btn-primary rounded-circle p-2 d-flex align-items-center shadow-sm">
-                        <span class="material-symbols-outlined text-white fs-5">add</span>
-                    </button>
-                </div>
-            </header>
+    
+    <!-- Animated Aurora Background -->
+    <div class="animated-bg"></div>
 
-            <!-- Dashboard Content -->
-            <div class="main-content">
-                @yield('content')
-            </div>
-        </main>
+    @if(request()->routeIs('dashboard'))
+    <!-- Map Container (Only on Dashboard) -->
+    <div class="map-container">
+        <div id="world-map"></div>
+    </div>
+    @endif
+
+    <!-- Main Floating Layout -->
+    <div class="app-layout">
         
-        <!-- Floating Sidebar (Moved to Right) -->
-        <nav class="floating-sidebar">
-            <div class="sidebar-logo text-end">
-                <div class="d-flex align-items-center justify-content-end mb-1">
-                    <span class="fs-4 fw-bolder text-white tracking-tight">GLOBAL<span class="text-accent">CHAIN</span></span>
-                    <span class="material-symbols-outlined text-accent ms-2 fs-2">public</span>
-                </div>
-                <div class="text-white-50 fs-7 text-uppercase tracking-widest pe-1">Command Center</div>
+        <!-- Top Navigation -->
+        <nav class="top-nav glass-panel">
+            <div class="d-flex align-items-center">
+                <span class="material-symbols-outlined text-cyan-glow me-2 fs-3" style="color: var(--cyan-glow);">public</span>
+                <span class="fs-5 fw-bold text-white tracking-tight">GLOBAL<span style="color: var(--cyan-glow);">CHAIN</span></span>
             </div>
             
-            <ul class="nav flex-column nav-custom mt-3">
-                <li class="nav-item">
-                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <span class="material-symbols-outlined me-3">space_dashboard</span>
-                        Command Center
-                    </a>
-                </li>
-                <li class="nav-item mt-4 mb-2 ms-4 text-white-50 fs-7 text-uppercase fw-semibold">Operations</li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="material-symbols-outlined me-3">directions_boat</span>
-                        Live Shipments
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="material-symbols-outlined me-3">explore</span>
-                        Global Map
-                    </a>
-                </li>
+            <div class="glass-pill search-global">
+                <span class="material-symbols-outlined text-muted fs-5">search</span>
+                <input type="text" placeholder="Search Country, Commodity, Port, News...">
+            </div>
+            
+            <div class="d-flex align-items-center gap-4">
+                <div class="d-flex flex-column text-end d-none d-lg-flex">
+                    <span class="fw-bold text-white lh-1" id="current-time">00:00:00 UTC</span>
+                    <span class="fs-8 text-muted lh-1 mt-1" id="current-date">Jan 01, 2026</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 border-start border-secondary ps-4">
+                    <button class="btn btn-link text-muted p-0 text-decoration-none hover-neon-text">
+                        <span class="material-symbols-outlined fs-5">dark_mode</span>
+                    </button>
+                    <button class="btn btn-link text-muted p-0 text-decoration-none hover-neon-text">
+                        <span class="material-symbols-outlined fs-5">translate</span>
+                    </button>
+                    <button class="btn btn-link text-muted p-0 position-relative text-decoration-none hover-neon-text">
+                        <span class="material-symbols-outlined fs-5">notifications</span>
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger rounded-circle"></span>
+                    </button>
+                </div>
                 
-                <li class="nav-item mt-4 mb-2 ms-4 text-white-50 fs-7 text-uppercase fw-semibold">Intelligence</li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-warning">
-                        <span class="material-symbols-outlined me-3">warning</span>
-                        Risk Monitoring
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="material-symbols-outlined me-3">thunderstorm</span>
-                        Weather Alerts
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="material-symbols-outlined me-3">trending_up</span>
-                        Economic Data
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="user-badge mt-auto cursor-pointer dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="bg-white text-secondary rounded-circle me-3 d-flex align-items-center justify-content-center fw-bold fs-5" style="width: 36px; height: 36px;">
-                    {{ substr(Auth::user()->name, 0, 1) }}
+                <div class="dropdown">
+                    <div class="d-flex align-items-center cursor-pointer dropdown-toggle" data-bs-toggle="dropdown">
+                        <div class="text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-6" style="width: 36px; height: 36px; background-color: var(--electric-blue); box-shadow: 0 0 15px var(--electric-blue);">
+                            {{ Auth::user() ? substr(Auth::user()->name, 0, 1) : 'G' }}
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-secondary mt-2 glass-panel">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><hr class="dropdown-divider border-secondary"></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') ?? '#' }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-danger">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
-                <div class="d-flex flex-column">
-                    <span class="fw-bold fs-6 lh-1 mb-1">{{ Auth::user()->name }}</span>
-                    <span class="fs-7 text-white-50 text-capitalize lh-1">{{ Auth::user()->role }}</span>
-                </div>
-                <span class="material-symbols-outlined ms-auto fs-5 text-white-50">more_vert</span>
             </div>
-            
-            <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-0 mb-2">
-                <li><a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}"><span class="material-symbols-outlined me-2 fs-5">person</span> Profile</a></li>
-                <li><a class="dropdown-item d-flex align-items-center" href="#"><span class="material-symbols-outlined me-2 fs-5">settings</span> Settings</a></li>
-                <li><hr class="dropdown-divider border-secondary"></li>
-                <li>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="dropdown-item text-danger d-flex align-items-center"><span class="material-symbols-outlined me-2 fs-5">logout</span> Sign Out</button>
-                    </form>
-                </li>
-            </ul>
         </nav>
+
+        <!-- Middle Section -->
+        <div class="workspace-area">
+            
+            <!-- Floating Sidebar -->
+            <aside class="left-sidebar glass-panel">
+                <div class="sidebar-logo-icon">
+                    <span class="material-symbols-outlined fs-2">apps</span>
+                </div>
+                
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="{{ route('dashboard') ?? '#' }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon">dashboard</span>
+                            <span class="text">Command Center</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.index') ?? '#' }}" class="{{ request()->routeIs('shipments.*') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon">local_shipping</span>
+                            <span class="text">Shipment Intel</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="material-symbols-outlined icon">language</span>
+                            <span class="text">Country Intel</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="material-symbols-outlined icon">anchor</span>
+                            <span class="text">Port Intel</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="material-symbols-outlined icon">inventory_2</span>
+                            <span class="text">Commodities</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="material-symbols-outlined icon">payments</span>
+                            <span class="text">Currencies</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="material-symbols-outlined icon">storm</span>
+                            <span class="text">Weather Intel</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="material-symbols-outlined icon text-warning">security</span>
+                            <span class="text text-warning">Risk Alerts</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="material-symbols-outlined icon">trending_up</span>
+                            <span class="text">Trade Analytics</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="material-symbols-outlined icon">newspaper</span>
+                            <span class="text">Global News</span>
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Dynamic Content (Yields Dashboard or Other Views) -->
+            @yield('content')
+            
+        </div>
+
+        <!-- Bottom Timeline Ticker -->
+        <footer class="bottom-ticker-container glass-panel">
+            <div class="ticker-track">
+                <!-- Original Set -->
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-success me-2">check_circle</span>
+                    <span class="fw-bold text-white me-2">10:42 UTC</span> Shipment #SHP-9021 arrived at Port of Shanghai.
+                </div>
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-warning me-2">warning</span>
+                    <span class="fw-bold text-white me-2">10:35 UTC</span> AI Alert: High port congestion detected in Rotterdam.
+                </div>
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-cyan-glow me-2" style="color: var(--cyan-glow);">sailing</span>
+                    <span class="fw-bold text-white me-2">10:15 UTC</span> Vessel MSC Isabella updated route to avoid storm.
+                </div>
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-danger me-2">gpp_bad</span>
+                    <span class="fw-bold text-white me-2">09:50 UTC</span> Risk level elevated for Suez Canal transit.
+                </div>
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-purple-neon me-2" style="color: var(--purple-neon);">show_chart</span>
+                    <span class="fw-bold text-white me-2">08:15 UTC</span> Global Copper prices dropped by 2.4%.
+                </div>
+                
+                <!-- Duplicated Set for Loop -->
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-success me-2">check_circle</span>
+                    <span class="fw-bold text-white me-2">10:42 UTC</span> Shipment #SHP-9021 arrived at Port of Shanghai.
+                </div>
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-warning me-2">warning</span>
+                    <span class="fw-bold text-white me-2">10:35 UTC</span> AI Alert: High port congestion detected in Rotterdam.
+                </div>
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-cyan-glow me-2" style="color: var(--cyan-glow);">sailing</span>
+                    <span class="fw-bold text-white me-2">10:15 UTC</span> Vessel MSC Isabella updated route to avoid storm.
+                </div>
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-danger me-2">gpp_bad</span>
+                    <span class="fw-bold text-white me-2">09:50 UTC</span> Risk level elevated for Suez Canal transit.
+                </div>
+                <div class="timeline-event">
+                    <span class="material-symbols-outlined fs-6 text-purple-neon me-2" style="color: var(--purple-neon);">show_chart</span>
+                    <span class="fw-bold text-white me-2">08:15 UTC</span> Global Copper prices dropped by 2.4%.
+                </div>
+            </div>
+        </footer>
         
     </div>
 
+    <!-- Floating AI Assistant -->
+    <div class="ai-assistant-orb">
+        <span class="material-symbols-outlined text-white fs-2">smart_toy</span>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        // Real-time clock update
+        // Init Map if exists
+        document.addEventListener("DOMContentLoaded", function() {
+            if(document.getElementById('world-map')) {
+                var map = L.map('world-map', {
+                    zoomControl: false,
+                    attributionControl: false
+                }).setView([20.0, 0.0], 3);
+                
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19
+                }).addTo(map);
+            }
+        });
+
+        // Clock
         function updateClock() {
             const now = new Date();
-            document.getElementById('current-time').innerText = 
-                now.getUTCHours().toString().padStart(2, '0') + ':' + 
-                now.getUTCMinutes().toString().padStart(2, '0') + ':' + 
-                now.getUTCSeconds().toString().padStart(2, '0');
+            const timeEl = document.getElementById('current-time');
+            if(timeEl) {
+                timeEl.innerText = 
+                    now.getUTCHours().toString().padStart(2, '0') + ':' + 
+                    now.getUTCMinutes().toString().padStart(2, '0') + ':' + 
+                    now.getUTCSeconds().toString().padStart(2, '0') + ' UTC';
+                    
+                const options = { month: 'short', day: '2-digit', year: 'numeric' };
+                document.getElementById('current-date').innerText = now.toLocaleDateString('en-US', options);
+            }
         }
         setInterval(updateClock, 1000);
         updateClock();
     </script>
-    
-    @stack('scripts')
 </body>
 </html>
