@@ -60,8 +60,8 @@
                         </div>
                     </div>
                     <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-secondary mt-2 glass-panel">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Settings</a></li>
                         <li><hr class="dropdown-divider border-secondary"></li>
                         <li>
                             <form method="POST" action="{{ route('logout') ?? '#' }}">
