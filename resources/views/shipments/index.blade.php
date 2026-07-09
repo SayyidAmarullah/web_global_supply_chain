@@ -1,214 +1,101 @@
 @extends('layouts.app')
-@section('title', 'Shipment Operations')
 
 @section('content')
-<main class="content-area d-flex flex-column flex-grow-1 p-4 h-100 pointer-events-auto" style="overflow-y: hidden;">
+<main class="content-area d-flex flex-column w-100 h-100 gap-4 overflow-auto pointer-events-auto p-4">
     
-    <!-- Header Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-shrink-0">
-        <div>
-            <h3 class="fw-bold mb-1 text-white">Live Shipments</h3>
-            <p class="text-muted fs-7 mb-0">Monitor and manage all active global transit operations.</p>
-        </div>
-        <div class="d-flex gap-3">
-            <button class="btn btn-outline-info rounded-pill px-4 py-2 d-flex align-items-center" style="border-color: var(--cyan-glow); color: var(--cyan-glow);">
-                <span class="material-symbols-outlined fs-6 me-2">download</span>
-                <span class="fs-7 fw-bold">Export PDF</span>
-            </button>
-            <button class="btn btn-outline-primary rounded-pill px-4 py-2 d-flex align-items-center" style="border-color: var(--electric-blue); color: var(--electric-blue);">
-                <span class="material-symbols-outlined fs-6 me-2">table_view</span>
-                <span class="fs-7 fw-bold">Export Excel</span>
-            </button>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3 class="text-white fw-bold tracking-tight mb-0">Shipment Intelligence</h3>
+        <div class="d-flex gap-2">
+            <x-button variant="outline" icon="filter_list">Filter</x-button>
+            <a href="{{ route('shipments.create') }}" class="text-decoration-none">
+                <x-button variant="primary" icon="add">New Shipment</x-button>
+            </a>
         </div>
     </div>
 
-    <!-- Main Table Container (Glassmorphism) -->
-    <div class="glass-panel w-100 d-flex flex-column flex-grow-1 overflow-hidden" style="border-radius: 24px;">
-        
-        <!-- Toolbar -->
-        <div class="p-4 border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center flex-shrink-0">
-            <div class="search-global m-0" style="width: 400px; background: rgba(0,0,0,0.3);">
-                <span class="material-symbols-outlined text-muted fs-5">search</span>
-                <input type="text" placeholder="Search by code, vessel, container...">
-            </div>
-            
-            <div class="d-flex gap-3">
-                <button class="btn btn-link text-muted text-decoration-none d-flex align-items-center px-3 rounded-pill" style="border: 1px solid rgba(255,255,255,0.1);">
-                    <span class="material-symbols-outlined fs-6 me-2">tune</span>
-                    <span class="fs-7 fw-bold">Advanced Filters</span>
-                </button>
-                <button class="btn btn-link text-muted text-decoration-none d-flex align-items-center px-3 rounded-pill" style="border: 1px solid rgba(255,255,255,0.1);">
-                    <span class="material-symbols-outlined fs-6 me-2">sort</span>
-                    <span class="fs-7 fw-bold">Sort</span>
-                </button>
-            </div>
+    <!-- Analytics Top Row -->
+    <div class="row g-4 mb-2">
+        <div class="col-md-3">
+            <x-card title="Total Shipments" icon="local_shipping">
+                <h2 class="text-white fw-bold mb-0 px-3 pb-3">{{ $stats['total'] }}</h2>
+            </x-card>
         </div>
+        <div class="col-md-3">
+            <x-card title="Active Transit" icon="sailing" glow="cyan">
+                <h2 class="text-white fw-bold mb-0 px-3 pb-3">{{ $stats['active'] }}</h2>
+            </x-card>
+        </div>
+        <div class="col-md-3">
+            <x-card title="Estimated Revenue" icon="payments" glow="success">
+                <h2 class="text-success fw-bold mb-0 px-3 pb-3">${{ number_format($stats['revenue']) }}</h2>
+            </x-card>
+        </div>
+        <div class="col-md-3">
+            <x-card title="Risk Alerts" icon="warning" glow="danger">
+                <h2 class="text-danger fw-bold mb-0 px-3 pb-3">0</h2>
+            </x-card>
+        </div>
+    </div>
 
-        <!-- Table Responsive -->
-        <div class="table-responsive flex-grow-1">
-            <table class="table table-borderless table-hover mb-0 align-middle w-100 h-100" style="color: var(--text-main);">
-                <thead class="text-uppercase fs-8 sticky-top" style="background: rgba(10, 17, 40, 0.95); backdrop-filter: blur(24px);">
+    <!-- Active Shipments Table -->
+    <x-card title="Active & Recent Shipments" icon="table_chart">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                <thead style="background: rgba(255,255,255,0.05);">
                     <tr>
-                        <th class="ps-4 fw-bold py-4 border-bottom border-secondary border-opacity-25" style="background: transparent; color: #A0ABC0 !important;">Shipment Code</th>
-                        <th class="fw-bold py-4 border-bottom border-secondary border-opacity-25" style="background: transparent; color: #A0ABC0 !important;">Vessel / Container</th>
-                        <th class="fw-bold py-4 border-bottom border-secondary border-opacity-25" style="background: transparent; color: #A0ABC0 !important;">Route</th>
-                        <th class="fw-bold py-4 border-bottom border-secondary border-opacity-25" style="background: transparent; color: #A0ABC0 !important;">Location</th>
-                        <th class="fw-bold py-4 border-bottom border-secondary border-opacity-25" style="background: transparent; color: #A0ABC0 !important;">Status</th>
-                        <th class="fw-bold py-4 border-bottom border-secondary border-opacity-25" style="background: transparent; color: #A0ABC0 !important;">Risk</th>
-                        <th class="fw-bold py-4 border-bottom border-secondary border-opacity-25" style="background: transparent; color: #A0ABC0 !important;">ETA</th>
-                        <th class="text-end pe-4 fw-bold py-4 border-bottom border-secondary border-opacity-25" style="background: transparent; color: #A0ABC0 !important;">Actions</th>
+                        <th class="text-white fw-bold">Shipment #</th>
+                        <th class="text-white fw-bold">Type</th>
+                        <th class="text-white fw-bold">Commodity</th>
+                        <th class="text-white fw-bold">Route</th>
+                        <th class="text-white fw-bold">Status</th>
+                        <th class="text-white fw-bold">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    
-                    <!-- Row 1 -->
-                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.3s;">
-                        <td class="ps-4 py-4" style="background: transparent;">
-                            <span class="fw-bold text-white fs-7">#SHP-9021</span><br>
-                            <span class="fs-8" style="color: var(--cyan-glow);">Ocean Freight</span>
+                <tbody class="border-top-0">
+                    @forelse($shipments as $shipment)
+                    <tr style="background: transparent; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <td class="text-white fw-medium">{{ $shipment->shipment_number }}</td>
+                        <td>
+                            @if($shipment->type === 'import')
+                                <x-badge variant="info">Import</x-badge>
+                            @else
+                                <x-badge variant="primary">Export</x-badge>
+                            @endif
                         </td>
-                        <td class="py-4" style="background: transparent;">
-                            <span class="fw-bold text-white d-block fs-7">MSC Isabella</span>
-                            <span class="fs-8 text-muted font-monospace">MSCU-7738201</span>
+                        <td class="text-muted">{{ $shipment->commodity }}</td>
+                        <td class="text-white">
+                            {{ $shipment->origin_country }} <span class="material-symbols-outlined fs-7 text-muted align-middle mx-1">arrow_forward</span> {{ $shipment->destination_country }}
                         </td>
-                        <td class="py-4" style="background: transparent;">
-                            <div class="d-flex align-items-center">
-                                <span class="fs-8 fw-bold text-white">Shanghai</span>
-                                <span class="material-symbols-outlined mx-2 fs-7 text-muted">arrow_forward</span>
-                                <span class="fs-8 fw-bold text-white">Rotterdam</span>
-                            </div>
+                        <td>
+                            @if($shipment->status === 'Redirected')
+                                <x-badge variant="purple">{{ $shipment->status }}</x-badge>
+                            @elseif($shipment->status === 'Pending')
+                                <x-badge variant="warning">{{ $shipment->status }}</x-badge>
+                            @else
+                                <x-badge variant="success">{{ $shipment->status }}</x-badge>
+                            @endif
                         </td>
-                        <td class="py-4 fs-8 text-muted" style="background: transparent;">Suez Canal</td>
-                        <td class="py-4" style="background: transparent;">
-                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-semibold fs-8 d-inline-flex align-items-center">
-                                <span class="material-symbols-outlined fs-7 me-1">sailing</span> In Transit
-                            </span>
-                        </td>
-                        <td class="py-4" style="background: transparent;">
-                            <span class="d-flex align-items-center text-success fs-8 fw-bold">
-                                <span class="material-symbols-outlined fs-6 me-1">verified_user</span> Low
-                            </span>
-                        </td>
-                        <td class="py-4 fs-8 fw-bold text-white" style="background: transparent;">Jul 12, 2026</td>
-                        <td class="text-end pe-4 py-4" style="background: transparent;">
-                            <div class="dropdown">
-                                <button class="btn btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown">
-                                    <span class="material-symbols-outlined">more_horiz</span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-secondary border-opacity-25 fs-8 glass-panel">
-                                    <li><a class="dropdown-item d-flex align-items-center py-2" href="#"><span class="material-symbols-outlined me-2 fs-6">visibility</span> View</a></li>
-                                    <li><a class="dropdown-item d-flex align-items-center py-2" style="color: var(--cyan-glow);" href="#"><span class="material-symbols-outlined me-2 fs-6">my_location</span> Track</a></li>
-                                    <li><a class="dropdown-item d-flex align-items-center py-2 text-warning" href="#"><span class="material-symbols-outlined me-2 fs-6">alt_route</span> Redirect</a></li>
-                                    <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
-                                    <li><a class="dropdown-item d-flex align-items-center py-2 text-danger" href="#"><span class="material-symbols-outlined me-2 fs-6">delete</span> Delete</a></li>
-                                </ul>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('shipments.show', $shipment) }}" class="text-decoration-none">
+                                    <x-button variant="ghost" class="p-1">
+                                        <span class="material-symbols-outlined fs-5">visibility</span>
+                                    </x-button>
+                                </a>
                             </div>
                         </td>
                     </tr>
-                    
-                    <!-- Row 2 -->
-                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.3s;">
-                        <td class="ps-4 py-4" style="background: transparent;">
-                            <span class="fw-bold text-white fs-7">#SHP-8105</span><br>
-                            <span class="fs-8" style="color: var(--purple-neon);">Air Freight</span>
-                        </td>
-                        <td class="py-4" style="background: transparent;">
-                            <span class="fw-bold text-white d-block fs-7">Boeing 777F</span>
-                            <span class="fs-8 text-muted font-monospace">AWB-0209931</span>
-                        </td>
-                        <td class="py-4" style="background: transparent;">
-                            <div class="d-flex align-items-center">
-                                <span class="fs-8 fw-bold text-white">Frankfurt</span>
-                                <span class="material-symbols-outlined mx-2 fs-7 text-muted">arrow_forward</span>
-                                <span class="fs-8 fw-bold text-white">New York</span>
-                            </div>
-                        </td>
-                        <td class="py-4 fs-8 text-muted" style="background: transparent;">North Atlantic</td>
-                        <td class="py-4" style="background: transparent;">
-                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2 fw-semibold fs-8 d-inline-flex align-items-center">
-                                <span class="material-symbols-outlined fs-7 me-1">schedule</span> Delayed
-                            </span>
-                        </td>
-                        <td class="py-4" style="background: transparent;">
-                            <span class="d-flex align-items-center text-warning fs-8 fw-bold">
-                                <span class="material-symbols-outlined fs-6 me-1">warning</span> Medium
-                            </span>
-                        </td>
-                        <td class="py-4 fs-8 fw-bold text-white" style="background: transparent;">Jul 05, 2026</td>
-                        <td class="text-end pe-4 py-4" style="background: transparent;">
-                            <div class="dropdown">
-                                <button class="btn btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown">
-                                    <span class="material-symbols-outlined">more_horiz</span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-secondary border-opacity-25 fs-8 glass-panel">
-                                    <li><a class="dropdown-item d-flex align-items-center py-2" href="#"><span class="material-symbols-outlined me-2 fs-6">visibility</span> View</a></li>
-                                    <li><a class="dropdown-item d-flex align-items-center py-2" style="color: var(--cyan-glow);" href="#"><span class="material-symbols-outlined me-2 fs-6">my_location</span> Track</a></li>
-                                    <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
-                                    <li><a class="dropdown-item d-flex align-items-center py-2 text-danger" href="#"><span class="material-symbols-outlined me-2 fs-6">delete</span> Delete</a></li>
-                                </ul>
-                            </div>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <span class="material-symbols-outlined fs-1 mb-2">inventory_2</span>
+                            <p class="mb-0">No shipments found.</p>
                         </td>
                     </tr>
-                    
-                    <!-- Row 3 -->
-                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.3s;">
-                        <td class="ps-4 py-4" style="background: transparent;">
-                            <span class="fw-bold text-white fs-7">#SHP-7742</span><br>
-                            <span class="fs-8" style="color: var(--cyan-glow);">Ocean Freight</span>
-                        </td>
-                        <td class="py-4" style="background: transparent;">
-                            <span class="fw-bold text-white d-block fs-7">Ever Given</span>
-                            <span class="fs-8 text-muted font-monospace">EGLV-110294</span>
-                        </td>
-                        <td class="py-4" style="background: transparent;">
-                            <div class="d-flex align-items-center">
-                                <span class="fs-8 fw-bold text-white">Shenzhen</span>
-                                <span class="material-symbols-outlined mx-2 fs-7 text-muted">arrow_forward</span>
-                                <span class="fs-8 fw-bold text-white">Los Angeles</span>
-                            </div>
-                        </td>
-                        <td class="py-4 fs-8 text-muted" style="background: transparent;">Pacific Ocean</td>
-                        <td class="py-4" style="background: transparent;">
-                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-2 fw-semibold fs-8 d-inline-flex align-items-center">
-                                <span class="material-symbols-outlined fs-7 me-1">error</span> Rerouted
-                            </span>
-                        </td>
-                        <td class="py-4" style="background: transparent;">
-                            <span class="d-flex align-items-center text-danger fs-8 fw-bold">
-                                <span class="material-symbols-outlined fs-6 me-1">gpp_bad</span> High
-                            </span>
-                        </td>
-                        <td class="py-4 fs-8 fw-bold text-white" style="background: transparent;">Jul 20, 2026</td>
-                        <td class="text-end pe-4 py-4" style="background: transparent;">
-                            <div class="dropdown">
-                                <button class="btn btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown">
-                                    <span class="material-symbols-outlined">more_horiz</span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-secondary border-opacity-25 fs-8 glass-panel">
-                                    <li><a class="dropdown-item d-flex align-items-center py-2" href="#"><span class="material-symbols-outlined me-2 fs-6">visibility</span> View</a></li>
-                                    <li><a class="dropdown-item d-flex align-items-center py-2" style="color: var(--cyan-glow);" href="#"><span class="material-symbols-outlined me-2 fs-6">my_location</span> Track</a></li>
-                                    <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
-                                    <li><a class="dropdown-item d-flex align-items-center py-2 text-danger" href="#"><span class="material-symbols-outlined me-2 fs-6">delete</span> Delete</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                    
+                    @endforelse
                 </tbody>
             </table>
         </div>
-        
-        <!-- Pagination -->
-        <div class="p-4 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center flex-shrink-0" style="background: rgba(0,0,0,0.2);">
-            <span class="fs-8 text-muted">Showing 1 to 3 of 152 shipments</span>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-secondary border-0 text-muted p-1"><span class="material-symbols-outlined fs-6">chevron_left</span></button>
-                <button class="btn btn-sm btn-primary rounded px-3 py-1 fs-8 fw-bold" style="background: var(--electric-blue); border-color: var(--electric-blue);">1</button>
-                <button class="btn btn-sm btn-outline-secondary border-0 rounded px-3 py-1 fs-8 text-muted">2</button>
-                <button class="btn btn-sm btn-outline-secondary border-0 rounded px-3 py-1 fs-8 text-muted">3</button>
-                <button class="btn btn-sm btn-outline-secondary border-0 text-muted p-1"><span class="material-symbols-outlined fs-6">chevron_right</span></button>
-            </div>
-        </div>
-    </div>
+    </x-card>
 </main>
 @endsection
