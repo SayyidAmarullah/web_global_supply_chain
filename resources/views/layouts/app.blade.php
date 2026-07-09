@@ -97,19 +97,19 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('intelligence.index') }}" class="{{ request()->routeIs('intelligence.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">language</span>
-                            <span class="text">Country Intel</span>
+                            <span class="text">Global Intelligence</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('intelligence.ports') }}">
                             <span class="material-symbols-outlined icon">anchor</span>
                             <span class="text">Port Intel</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('intelligence.commodities') }}">
                             <span class="material-symbols-outlined icon">inventory_2</span>
                             <span class="text">Commodities</span>
                         </a>

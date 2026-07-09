@@ -21,6 +21,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/shipments/{shipment}/redirect', [ShipmentController::class, 'redirect'])->name('shipments.redirect');
     Route::post('/shipments/{shipment}/redirect', [ShipmentController::class, 'storeRedirect'])->name('shipments.storeRedirect');
     
+    // Global Intelligence Routes
+    Route::prefix('intelligence')->name('intelligence.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\IntelligenceController::class, 'index'])->name('index');
+        Route::get('/countries', [\App\Http\Controllers\IntelligenceController::class, 'countries'])->name('countries');
+        Route::get('/commodities', [\App\Http\Controllers\IntelligenceController::class, 'commodities'])->name('commodities');
+        Route::get('/ports', [\App\Http\Controllers\IntelligenceController::class, 'ports'])->name('ports');
+    });
+
     // Core Shipment Routes
     Route::resource('shipments', ShipmentController::class);
 });

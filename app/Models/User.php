@@ -30,4 +30,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the shipments for the user.
+     */
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class);
+    }
 }
