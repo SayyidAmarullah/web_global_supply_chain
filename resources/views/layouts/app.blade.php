@@ -97,6 +97,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('map.index') }}" class="{{ request()->routeIs('map.*') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon">explore</span>
+                            <span class="text">World Map</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('intelligence.index') }}" class="{{ request()->routeIs('intelligence.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">language</span>
                             <span class="text">Global Intelligence</span>
@@ -210,20 +216,6 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        // Init Map if exists
-        document.addEventListener("DOMContentLoaded", function() {
-            if(document.getElementById('world-map')) {
-                var map = L.map('world-map', {
-                    zoomControl: false,
-                    attributionControl: false
-                }).setView([20.0, 0.0], 3);
-                
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    maxZoom: 19
-                }).addTo(map);
-            }
-        });
-
         // Clock
         function updateClock() {
             const now = new Date();

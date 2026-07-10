@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="content-area d-flex flex-column w-100 h-100 gap-4 overflow-auto pointer-events-auto p-4">
+<main class="content-area d-flex flex-column w-100 h-100 gap-4 overflow-auto pe-auto p-4">
     
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h3 class="text-white fw-bold tracking-tight mb-0">Shipment Intelligence</h3>

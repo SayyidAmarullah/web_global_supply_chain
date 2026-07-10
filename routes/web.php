@@ -8,9 +8,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -21,6 +19,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/shipments/{shipment}/redirect', [ShipmentController::class, 'redirect'])->name('shipments.redirect');
     Route::post('/shipments/{shipment}/redirect', [ShipmentController::class, 'storeRedirect'])->name('shipments.storeRedirect');
     
+    // Interactive World Map Routes
+    Route::get('/map', [\App\Http\Controllers\MapController::class, 'index'])->name('map.index');
+    Route::get('/api/map/data', [\App\Http\Controllers\MapController::class, 'getMapData'])->name('map.data');
+
     // Global Intelligence Routes
     Route::prefix('intelligence')->name('intelligence.')->group(function () {
         Route::get('/', [\App\Http\Controllers\IntelligenceController::class, 'index'])->name('index');
