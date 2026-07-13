@@ -13,8 +13,26 @@
     --warning: #F59E0B;
     --danger: #EF4444;
     --text-main: #FFFFFF;
-    --text-muted: #A0ABC0; /* Lighter grayish blue for high contrast */
+    --text-muted: #A0ABC0; 
+    --glass-bg: rgba(10, 17, 40, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: rgba(0,0,0,0.5);
+    --pill-bg: rgba(255, 255, 255, 0.03);
     --bs-body-font-family: 'Inter', sans-serif !important;
+}
+
+[data-theme="light"] {
+    --bg-deep-space: #E2E8F0;
+    --bg-navy: #FFFFFF;
+    --electric-blue: #2563EB;
+    --purple-neon: #7C3AED;
+    --cyan-glow: #0284C7;
+    --text-main: #0F172A;
+    --text-muted: #475569;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-shadow: rgba(0,0,0,0.05);
+    --pill-bg: rgba(0, 0, 0, 0.05);
 }
 
 body, h1, h2, h3, h4, h5, h6, p, a, span:not(.material-symbols-outlined), div, button, input {
@@ -85,17 +103,17 @@ body {
 
 /* Core Glassmorphism */
 .glass-panel {
-    background: rgba(10, 17, 40, 0.65);
+    background: var(--glass-bg);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 40px var(--glass-shadow), inset 0 0 0 1px rgba(255,255,255,0.03);
 }
 
 .glass-pill {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--pill-bg);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
     border-radius: 50px;
     transition: all 0.3s ease;
 }
@@ -327,6 +345,36 @@ body {
 /* Bootstrap Text Overrides */
 .text-muted { color: var(--text-muted) !important; }
 .text-white { color: var(--text-main) !important; }
+.text-light { color: var(--text-main) !important; }
+.text-dark { color: var(--text-main) !important; }
+.bg-dark { background-color: var(--glass-bg) !important; }
+
+/* Table Dark Override */
+.table-dark {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-main);
+    --bs-table-border-color: var(--glass-border);
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.02);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+}
+[data-theme="light"] .table-dark {
+    --bs-table-striped-bg: rgba(0, 0, 0, 0.02);
+    --bs-table-hover-bg: rgba(0, 0, 0, 0.05);
+}
+.table-dark td, .table-dark th {
+    color: var(--text-main);
+}
+
+/* Button Overrides */
+.btn-dark {
+    background-color: var(--pill-bg);
+    color: var(--text-main);
+    border-color: var(--glass-border);
+}
+.btn-dark:hover {
+    background-color: var(--glass-border);
+    color: var(--text-main);
+}
 
 /* Bottom Ticker */
 .bottom-ticker-container {

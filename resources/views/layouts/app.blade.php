@@ -41,8 +41,8 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3 border-start border-secondary ps-4">
-                    <button class="btn btn-link text-muted p-0 text-decoration-none hover-neon-text">
-                        <span class="material-symbols-outlined fs-5">dark_mode</span>
+                    <button class="btn btn-link text-muted p-0 text-decoration-none hover-neon-text" onclick="toggleTheme()" id="theme-toggle-btn">
+                        <span class="material-symbols-outlined fs-5">light_mode</span>
                     </button>
                     <button class="btn btn-link text-muted p-0 text-decoration-none hover-neon-text">
                         <span class="material-symbols-outlined fs-5">translate</span>
@@ -232,6 +232,32 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+        // Theme Toggle Logic
+        function toggleTheme() {
+            const root = document.documentElement;
+            const btnIcon = document.querySelector('#theme-toggle-btn span');
+            
+            if (root.getAttribute('data-theme') === 'light') {
+                root.removeAttribute('data-theme');
+                btnIcon.innerText = 'light_mode'; // Icon suggests switching to light mode
+                localStorage.setItem('theme', 'dark');
+            } else {
+                root.setAttribute('data-theme', 'light');
+                btnIcon.innerText = 'dark_mode'; // Icon suggests switching to dark mode
+                localStorage.setItem('theme', 'light');
+            }
+
+            // Custom event so Map or other elements can redraw if necessary
+            window.dispatchEvent(new Event('theme-changed'));
+        }
+
+        // Initialize Theme
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            const btnIcon = document.querySelector('#theme-toggle-btn span');
+            if(btnIcon) btnIcon.innerText = 'dark_mode';
+        }
     </script>
 </body>
 </html>
