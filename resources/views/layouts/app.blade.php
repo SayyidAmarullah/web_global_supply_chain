@@ -109,6 +109,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('ai.index') }}" class="{{ request()->routeIs('ai.*') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon text-purple-neon" style="color: var(--purple-neon);">psychology</span>
+                            <span class="text text-white fw-bold">AI Decision Support</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('intelligence.ports') }}">
                             <span class="material-symbols-outlined icon">anchor</span>
                             <span class="text">Port Intel</span>

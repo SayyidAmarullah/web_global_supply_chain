@@ -114,21 +114,7 @@
         </div>
     </div>
 
-    <!-- Right Sliding Panel for Shipment Details -->
-    <div id="shipment-panel" class="position-absolute top-0 end-0 h-100 glass-panel border-start border-secondary border-opacity-25" style="width: 420px; transform: translateX(100%); transition: transform 0.3s ease-in-out; pointer-events: auto; z-index: 1050;">
-        <div class="p-4 border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
-            <h5 class="text-white fw-bold mb-0">Vessel Intelligence</h5>
-            <button class="btn btn-link text-muted p-0 hover-neon-text" onclick="closeShipmentPanel()">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div class="p-4 overflow-auto" style="height: calc(100% - 70px);" id="shipment-panel-content">
-            <div class="text-center text-muted mt-5">
-                <span class="spinner-border spinner-border-sm mb-2"></span>
-                <p>Loading telemetry...</p>
-            </div>
-        </div>
-    </div>
+
 </main>
 
 <!-- Leaflet CSS & JS -->
@@ -186,14 +172,12 @@
 
         // Add Layers to Map
         layers.countries.addTo(map);
-        layers.routes.addTo(map);
         layers.ports.addTo(map);
         layers.shipments.addTo(map);
 
         // Layer Control
         L.control.layers(null, {
             "Active Shipments": layers.shipments,
-            "Shipping Routes": layers.routes,
             "World Ports": layers.ports,
             "Country Risk Layer": layers.countries
         }, { position: 'bottomleft', collapsed: false }).addTo(map);
@@ -279,9 +263,14 @@
         }).addTo(layers.countries);
     }
 
+    let movingMarkers = [];
+    let animationFrameId = null;
+
     function renderShipments(shipments) {
         layers.shipments.clearLayers();
-        layers.routes.clearLayers();
+        // Remove layers.routes since we draw routes dynamically now
+        movingMarkers = [];
+        if(animationFrameId) cancelAnimationFrame(animationFrameId);
 
         const shipIcon = L.divIcon({
             className: 'custom-div-icon',
@@ -302,22 +291,33 @@
         });
 
         shipments.forEach(ship => {
-            // Draw Animated Route
-            if (ship.route && ship.route.length >= 2) {
-                const polyline = L.polyline(ship.route, {
-                    color: ship.status === 'Redirected' ? 'var(--purple-neon)' : 'var(--cyan-glow)',
-                    weight: 3,
-                    opacity: 0.6,
-                    className: 'animated-route'
-                }).addTo(layers.routes);
-            }
-
             // Draw Marker
             const icon = ship.status === 'Redirected' ? redirectedIcon : shipIcon;
-            const marker = L.marker([ship.lat, ship.lng], { icon: icon }).addTo(layers.shipments);
             
-            marker.on('click', () => openShipmentPanel(ship));
+            // Get initial position based on progress
+            let initialLatLng = getPointOnRoute(ship.route, ship.progress || 0);
+            const marker = L.marker(initialLatLng, { icon: icon }).addTo(layers.shipments);
+            
+            marker.on('click', () => {
+                window.location.href = '/shipments/' + ship.id;
+            });
         });
+    }
+
+    function getPointOnRoute(route, progress) {
+        if(!route || route.length < 2) return route && route[0] ? route[0] : [0,0];
+        let totalSegments = route.length - 1;
+        let scaledProgress = progress * totalSegments;
+        let index = Math.floor(scaledProgress);
+        if(index >= totalSegments) return route[totalSegments];
+        
+        let remainder = scaledProgress - index;
+        let p1 = route[index];
+        let p2 = route[index + 1];
+        
+        let lat = p1[0] + (p2[0] - p1[0]) * remainder;
+        let lng = p1[1] + (p2[1] - p1[1]) * remainder;
+        return [lat, lng];
     }
 
     function renderPorts(ports) {
@@ -355,82 +355,6 @@
         });
         document.getElementById('ai-decision-content').innerHTML = html;
     }
-
-    function openShipmentPanel(ship) {
-        const panel = document.getElementById('shipment-panel');
-        const content = document.getElementById('shipment-panel-content');
-        
-        panel.style.transform = 'translateX(0)';
-        
-        let riskColor = ship.risk_score > 60 ? 'danger' : (ship.risk_score > 30 ? 'warning' : 'success');
-        
-        content.innerHTML = `
-            <div class="mb-4">
-                <span class="badge bg-${ship.status==='Redirected'?'purple':'success'} bg-opacity-25 text-${ship.status==='Redirected'?'purple-neon':'success'} border border-${ship.status==='Redirected'?'purple':'success'} border-opacity-50 mb-2">${ship.status}</span>
-                <h4 class="text-white fw-bold mb-1">${ship.shipment_number}</h4>
-                <p class="text-muted fs-7 mb-0">${ship.vessel_name} • ${ship.company}</p>
-            </div>
-
-            <div class="row g-3 mb-4">
-                <div class="col-6">
-                    <div class="glass-pill p-3 h-100">
-                        <span class="text-muted fs-8 d-block mb-1">Commodity</span>
-                        <span class="text-white fw-bold fs-7 d-block">${ship.commodity}</span>
-                        <span class="text-muted fs-8">${ship.quantity}</span>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="glass-pill p-3 h-100">
-                        <span class="text-muted fs-8 d-block mb-1">Est. Profit</span>
-                        <span class="text-success fw-bold fs-6 d-block">$${ship.profit}</span>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="glass-pill p-3 h-100">
-                        <span class="text-muted fs-8 d-block mb-1">Telemetry</span>
-                        <span class="text-white fw-bold fs-7 d-block">${ship.speed} kts</span>
-                        <span class="text-muted fs-8">Hdg: ${ship.heading}°</span>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="glass-pill p-3 h-100">
-                        <span class="text-muted fs-8 d-block mb-1">Risk Score</span>
-                        <span class="text-${riskColor} fw-bold fs-6 d-block">${ship.risk_score}/100</span>
-                    </div>
-                </div>
-            </div>
-
-            <h6 class="text-white fw-bold mb-3">Voyage Plan</h6>
-            <div class="position-relative ms-2 mb-4">
-                <div class="position-absolute h-100 border-start border-secondary" style="left: 4px; top: 10px; z-index: 0;"></div>
-                
-                <div class="d-flex gap-3 mb-4 position-relative" style="z-index: 1;">
-                    <div class="rounded-circle bg-secondary mt-1" style="width: 10px; height: 10px;"></div>
-                    <div>
-                        <p class="text-white fw-bold mb-0 fs-7">${ship.origin}</p>
-                        <span class="text-muted fs-8">Origin Port</span>
-                    </div>
-                </div>
-
-                <div class="d-flex gap-3 position-relative" style="z-index: 1;">
-                    <div class="rounded-circle bg-cyan-glow mt-1" style="width: 10px; height: 10px; background-color: var(--cyan-glow); box-shadow: 0 0 5px var(--cyan-glow);"></div>
-                    <div>
-                        <p class="text-white fw-bold mb-0 fs-7">${ship.destination}</p>
-                        <span class="text-muted fs-8">Destination (ETA: ${ship.eta})</span>
-                    </div>
-                </div>
-            </div>
-
-            <a href="${ship.redirect_url}" class="text-decoration-none">
-                <button class="btn btn-primary w-100 rounded-pill d-flex align-items-center justify-content-center gap-2" style="background-color: var(--purple-neon); border-color: var(--purple-neon); height: 50px;">
-                    <span class="material-symbols-outlined fs-5">alt_route</span>
-                    Smart Redirect Engine
-                </button>
-            </a>
-        `;
-    }
-
-    function closeShipmentPanel() { document.getElementById('shipment-panel').style.transform = 'translateX(100%)'; }
     
     function closeAIPanel() { 
         document.getElementById('ai-decision-panel').style.transform = 'translateX(-150%)'; 

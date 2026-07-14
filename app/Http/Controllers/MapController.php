@@ -34,53 +34,65 @@ class MapController extends Controller
 
         $liveShipments = [];
 
+        $seaRoutes = [
+            'shanghai-rotterdam' => [[31.228, 121.475], [24.5, 119.5], [15.0, 112.0], [1.2, 104.0], [5.0, 98.0], [5.8, 80.0], [12.0, 60.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 15.0], [37.5, 5.0], [36.0, -5.0], [38.0, -10.0], [45.0, -8.0], [49.0, -4.0], [50.5, 0.0], [51.949, 4.148]],
+            'shanghai-hamburg' => [[31.228, 121.475], [24.5, 119.5], [15.0, 112.0], [1.2, 104.0], [5.0, 98.0], [5.8, 80.0], [12.0, 60.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 15.0], [37.5, 5.0], [36.0, -5.0], [38.0, -10.0], [45.0, -8.0], [49.0, -4.0], [52.0, 3.0], [53.548, 9.987]],
+            'shanghai-yokohama' => [[31.228, 121.475], [31.0, 125.0], [30.5, 130.0], [32.0, 134.0], [34.0, 138.5], [35.1, 139.7], [35.443, 139.638]],
+            'shanghai-cape town' => [[31.228, 121.475], [24.5, 119.5], [15.0, 112.0], [1.2, 104.0], [5.0, 98.0], [0.0, 90.0], [-15.0, 70.0], [-25.0, 50.0], [-35.0, 35.0], [-36.0, 20.0], [-33.924, 18.424]],
+            'shanghai-savannah' => [[31.228, 121.475], [30.0, 130.0], [20.0, 160.0], [15.0, -160.0], [7.5, -81.0], [8.9, -79.5], [9.3, -79.9], [15.0, -75.0], [25.0, -79.0], [28.0, -80.0], [32.08, -81.09]],
+            'los angeles-yokohama' => [[33.728, -118.262], [34.0, -130.0], [35.0, -150.0], [36.0, -170.0], [36.0, 170.0], [35.0, 150.0], [35.443, 139.638]],
+            'santos-shanghai' => [[-23.953, -46.335], [-30.0, -30.0], [-35.0, -10.0], [-35.5, 19.5], [-30.0, 40.0], [-20.0, 60.0], [-10.0, 80.0], [-6.0, 105.0], [-4.0, 108.0], [-2.0, 108.5], [5.0, 109.0], [15.0, 115.0], [24.0, 119.0], [31.228, 121.475]],
+            'jebel ali-hamburg' => [[24.985, 55.027], [26.5, 56.5], [24.0, 59.0], [15.0, 55.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 15.0], [37.5, 5.0], [36.0, -5.0], [38.0, -10.0], [45.0, -8.0], [49.0, -4.0], [52.0, 3.0], [53.548, 9.987]],
+            'new york-cape town' => [[40.678, -73.998], [35.0, -65.0], [20.0, -45.0], [0.0, -25.0], [-15.0, -10.0], [-25.0, 0.0], [-33.924, 18.424]]
+        ];
+
+        // Port Coordinates Dictionary
+        $portCoords = [
+            'shanghai' => [31.228, 121.475],
+            'rotterdam' => [51.949, 4.148],
+            'los angeles' => [33.728, -118.262],
+            'yokohama' => [35.443, 139.638],
+            'santos' => [-23.953, -46.335],
+            'jebel ali' => [24.985, 55.027],
+            'hamburg' => [53.548, 9.987],
+            'new york' => [40.678, -73.998],
+            'cape town' => [-33.924, 18.424],
+            'savannah' => [32.08, -81.09]
+        ];
+
         // If no shipments in DB, generate some dummy ones for presentation
         if ($shipments->isEmpty()) {
-            for ($i = 1; $i <= 5; $i++) {
-                $lat = mt_rand(-3000, 5000) / 100;
-                $lng = mt_rand(-10000, 10000) / 100;
-                
-                $originLat = $lat + (mt_rand(-2000, 2000)/100);
-                $originLng = $lng - (mt_rand(2000, 5000)/100);
-                $destLat = $lat + (mt_rand(-2000, 2000)/100);
-                $destLng = $lng + (mt_rand(2000, 5000)/100);
-
-                $liveShipments[] = [
-                    'id' => $i,
-                    'shipment_number' => 'SHP-MOCK-' . mt_rand(1000, 9999),
-                    'vessel_name' => 'Demo Vessel ' . $i,
-                    'company' => 'Global Freight Corp',
-                    'commodity' => ['Crude Oil', 'Wheat', 'Electronics', 'Textiles', 'Automobiles'][mt_rand(0, 4)],
-                    'quantity' => mt_rand(100, 5000) . ' Tons',
-                    'origin' => 'Origin Port',
-                    'destination' => 'Dest Port',
-                    'status' => ['In Transit', 'Redirected'][mt_rand(0, 1)],
-                    'lat' => $lat,
-                    'lng' => $lng,
-                    'route' => [
-                        [$originLat, $originLng], // Origin
-                        [$lat, $lng], // Current
-                        [$destLat, $destLng] // Dest
-                    ],
-                    'speed' => mt_rand(10, 25),
-                    'heading' => mt_rand(0, 360),
-                    'profit' => number_format(mt_rand(5000, 50000), 2),
-                    'risk_score' => mt_rand(10, 80),
-                    'opp_score' => mt_rand(50, 99),
-                    'weather' => ['Clear', 'Rain', 'Storm'][mt_rand(0, 2)],
-                    'eta' => 'Next Week',
-                    'redirect_url' => '#'
-                ];
-            }
+            $liveShipments = [];
         } else {
-            $liveShipments = $shipments->map(function ($ship) {
-                $lat = $ship->current_latitude ?? (mt_rand(-3000, 5000) / 100);
-                $lng = $ship->current_longitude ?? (mt_rand(-10000, 10000) / 100);
+            $liveShipments = $shipments->map(function ($ship) use ($seaRoutes, $portCoords) {
+                // Determine origin and current destination
+                $originPortName = strtolower(str_replace('Port of ', '', $ship->origin_port));
+                $destPortName = strtolower(str_replace('Port of ', '', $ship->destination_port));
+                $routeKey = $originPortName . '-' . $destPortName;
                 
-                $originLat = $lat + (mt_rand(-2000, 2000)/100);
-                $originLng = $lng - (mt_rand(2000, 5000)/100);
-                $destLat = $lat + (mt_rand(-2000, 2000)/100);
-                $destLng = $lng + (mt_rand(2000, 5000)/100);
+                // If we have a predefined route for the current destination, use it
+                if (isset($seaRoutes[$routeKey])) {
+                    $points = $seaRoutes[$routeKey];
+                } else {
+                    // Fallback: draw straight line from origin to new destination
+                    $originCoord = [0, 0];
+                    foreach ($portCoords as $p => $c) {
+                        if (str_contains($originPortName, $p)) $originCoord = $c;
+                    }
+                    
+                    $destCoord = [0, 0];
+                    foreach ($portCoords as $p => $c) {
+                        if (str_contains($destPortName, $p)) $destCoord = $c;
+                    }
+                    
+                    if ($destCoord === [0, 0]) {
+                        $hash = crc32($destPortName);
+                        $destCoord = [($hash % 60) - 30, ($hash % 180) - 90];
+                    }
+                    $points = [$originCoord, $destCoord];
+                }
+
+                $progress = mt_rand(10, 50) / 100;
 
                 return [
                     'id' => $ship->id,
@@ -89,16 +101,13 @@ class MapController extends Controller
                     'company' => 'Global Freight Corp',
                     'commodity' => $ship->commodity,
                     'quantity' => $ship->quantity . ' ' . $ship->weight_unit,
-                    'origin' => $ship->origin_country . ' (' . $ship->origin_port . ')',
-                    'destination' => $ship->destination_country . ' (' . $ship->destination_port . ')',
+                    'origin' => $ship->origin_country . ' - ' . $ship->origin_port,
+                    'destination' => $ship->destination_country . ' - ' . $ship->destination_port,
                     'status' => $ship->status,
-                    'lat' => $lat,
-                    'lng' => $lng,
-                    'route' => [
-                        [$originLat, $originLng], // Origin
-                        [$lat, $lng], // Current
-                        [$destLat, $destLng] // Dest
-                    ],
+                    'lat' => $points[0][0],
+                    'lng' => $points[0][1],
+                    'route' => $points,
+                    'progress' => $progress,
                     'speed' => $ship->current_speed ?? mt_rand(10, 25),
                     'heading' => $ship->current_heading ?? mt_rand(0, 360),
                     'profit' => number_format($ship->estimated_profit, 2),

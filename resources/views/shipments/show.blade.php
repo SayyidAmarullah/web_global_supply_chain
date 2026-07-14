@@ -46,12 +46,8 @@
         <!-- Map & Route Information -->
         <div class="col-md-8 d-flex flex-column gap-4">
             <x-card title="Live Tracking & Route" icon="explore" glow="cyan">
-                <!-- Map Placeholder -->
-                <div class="w-100 rounded-3 mb-4 border border-secondary border-opacity-25 d-flex justify-content-center align-items-center" style="height: 300px; background: rgba(14, 165, 233, 0.05); overflow: hidden; position: relative;">
-                    <div class="position-absolute d-flex flex-column align-items-center">
-                        <span class="material-symbols-outlined text-cyan-glow fs-1 mb-2" style="color: var(--cyan-glow);">satellite_alt</span>
-                        <span class="text-muted fw-bold">Interactive Route Map Rendering...</span>
-                    </div>
+                <!-- Map Container -->
+                <div id="shipment-detail-map" class="w-100 rounded-3 mb-4 border border-secondary border-opacity-25" style="height: 300px; background: rgba(14, 165, 233, 0.05); overflow: hidden; position: relative; z-index: 1;">
                 </div>
 
                 <div class="row g-3 px-3 pb-3">
@@ -67,6 +63,15 @@
                         <p class="text-muted mb-1 fs-7">Destination</p>
                         <h6 class="text-white fw-bold mb-0">{{ $shipment->destination_country }}</h6>
                         <span class="text-muted fs-8">{{ $shipment->destination_port }}</span>
+                        @php
+                            if ($shipment->estimated_arrival) {
+                                $targetDate = \Carbon\Carbon::parse($shipment->estimated_arrival);
+                                $days = abs((int) now()->diffInDays($targetDate, false));
+                            } else {
+                                $days = rand(8, 24);
+                            }
+                        @endphp
+                        <br><span class="badge bg-primary bg-opacity-25 mt-1" style="color: var(--cyan-glow); border: 1px solid var(--cyan-glow);">ETA: {{ $days }} Days</span>
                     </div>
                 </div>
             </x-card>
@@ -101,6 +106,34 @@
         <!-- Right Panel: Cargo Intel & Timeline -->
         <div class="col-md-4 d-flex flex-column gap-4">
             
+            <x-card title="Cargo Manifesto" icon="inventory_2" glow="purple">
+                <div class="p-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-purple bg-opacity-25 p-2 me-3 d-flex align-items-center justify-content-center">
+                            <span class="material-symbols-outlined text-purple">category</span>
+                        </div>
+                        <div>
+                            <p class="text-muted fs-8 mb-0">Primary Commodity</p>
+                            <h5 class="text-white fw-bold mb-0">{{ $shipment->commodity }}</h5>
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="bg-dark border border-secondary border-opacity-25 rounded p-2">
+                                <span class="text-muted fs-8 d-block mb-1">Volume/Weight</span>
+                                <span class="text-white fw-bold fs-7">{{ $shipment->quantity }} {{ $shipment->weight_unit }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-dark border border-secondary border-opacity-25 rounded p-2">
+                                <span class="text-muted fs-8 d-block mb-1">Vessel Name</span>
+                                <span class="text-white fw-bold fs-7">{{ $shipment->vessel_name ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </x-card>
+
             <x-card title="Cargo Financials" icon="analytics" glow="success">
                 <div class="p-3">
                     <div class="d-flex justify-content-between mb-2">
@@ -144,3 +177,161 @@
     </div>
 </main>
 @endsection
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+    .animated-route { stroke-dasharray: 8, 8; animation: dash 20s linear infinite; }
+    @keyframes dash { to { stroke-dashoffset: -1000; } }
+    .custom-div-icon { background: transparent; border: none; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Map
+        const map = L.map('shipment-detail-map', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([20, 0], 2);
+
+        L.tileLayer(
+            document.documentElement.getAttribute('data-theme') === 'light' 
+                ? 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png'
+                : 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', 
+            { subdomains: 'abcd', maxZoom: 19 }
+        ).addTo(map);
+
+        // Predefined Highly Detailed Realistic Routes
+        const seaRoutes = {
+            'shanghai-rotterdam': [[31.228, 121.475], [24.5, 119.5], [15.0, 112.0], [1.2, 104.0], [5.0, 98.0], [5.8, 80.0], [12.0, 60.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 15.0], [37.5, 5.0], [36.0, -5.0], [38.0, -10.0], [45.0, -8.0], [49.0, -4.0], [50.5, 0.0], [51.949, 4.148]],
+            'shanghai-hamburg': [[31.228, 121.475], [24.5, 119.5], [15.0, 112.0], [1.2, 104.0], [5.0, 98.0], [5.8, 80.0], [12.0, 60.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 15.0], [37.5, 5.0], [36.0, -5.0], [38.0, -10.0], [45.0, -8.0], [49.0, -4.0], [52.0, 3.0], [53.548, 9.987]],
+            'shanghai-yokohama': [[31.228, 121.475], [31.0, 125.0], [30.5, 130.0], [32.0, 134.0], [34.0, 138.5], [35.1, 139.7], [35.443, 139.638]],
+            'shanghai-cape town': [[31.228, 121.475], [24.5, 119.5], [15.0, 112.0], [1.2, 104.0], [5.0, 98.0], [0.0, 90.0], [-15.0, 70.0], [-25.0, 50.0], [-35.0, 35.0], [-36.0, 20.0], [-33.924, 18.424]],
+            'shanghai-savannah': [[31.228, 121.475], [30.0, 130.0], [20.0, 160.0], [15.0, -160.0], [7.5, -81.0], [8.9, -79.5], [9.3, -79.9], [15.0, -75.0], [25.0, -79.0], [28.0, -80.0], [32.08, -81.09]],
+            'los angeles-yokohama': [[33.728, -118.262], [34.0, -130.0], [35.0, -150.0], [36.0, -170.0], [36.0, 170.0], [35.0, 150.0], [35.443, 139.638]],
+            'santos-shanghai': [[-23.953, -46.335], [-30.0, -30.0], [-35.0, -10.0], [-35.5, 19.5], [-30.0, 40.0], [-20.0, 60.0], [-10.0, 80.0], [-6.0, 105.0], [-4.0, 108.0], [-2.0, 108.5], [5.0, 109.0], [15.0, 115.0], [24.0, 119.0], [31.228, 121.475]],
+            'jebel ali-hamburg': [[24.985, 55.027], [26.5, 56.5], [24.0, 59.0], [15.0, 55.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 15.0], [37.5, 5.0], [36.0, -5.0], [38.0, -10.0], [45.0, -8.0], [49.0, -4.0], [52.0, 3.0], [53.548, 9.987]],
+            'new york-cape town': [[40.678, -73.998], [35.0, -65.0], [20.0, -45.0], [0.0, -25.0], [-15.0, -10.0], [-25.0, 0.0], [-33.924, 18.424]]
+        };
+
+        const portCoords = {
+            'shanghai': [31.228, 121.475],
+            'rotterdam': [51.949, 4.148],
+            'los angeles': [33.728, -118.262],
+            'yokohama': [35.443, 139.638],
+            'santos': [-23.953, -46.335],
+            'jebel ali': [24.985, 55.027],
+            'hamburg': [53.548, 9.987],
+            'new york': [40.678, -73.998],
+            'cape town': [-33.924, 18.424],
+            'savannah': [32.08, -81.09]
+        };
+
+        // Determine origin and current destination
+        const isRedirected = '{{ $shipment->status }}' === 'Redirected';
+        const color = isRedirected ? 'var(--purple-neon)' : 'var(--cyan-glow)';
+        
+        let originalOrigin = '{{ strtolower(str_replace("Port of ", "", $shipment->origin_port)) }}';
+        let destPort = '{{ strtolower(str_replace("Port of ", "", $shipment->destination_port)) }}';
+        
+        const routeKey = originalOrigin + '-' + destPort;
+        let routePoints = [];
+
+        if (seaRoutes[routeKey]) {
+            routePoints = [...seaRoutes[routeKey]];
+        } else {
+            // Draw straight line fallback
+            let originCoord = [0, 0];
+            let destCoord = [0, 0];
+            
+            for (const [portName, coords] of Object.entries(portCoords)) {
+                if (originalOrigin.includes(portName)) originCoord = coords;
+                if (destPort.includes(portName)) destCoord = coords;
+            }
+
+            if (destCoord[0] === 0 && destCoord[1] === 0) {
+                let hash = 0;
+                for (let i = 0; i < destPort.length; i++) {
+                    hash = ((hash << 5) - hash) + destPort.charCodeAt(i);
+                    hash |= 0; 
+                }
+                hash = Math.abs(hash);
+                destCoord = [(hash % 60) - 30, (hash % 180) - 90];
+            }
+            
+            routePoints = [originCoord, destCoord];
+        }
+
+        // Draw Route
+        const routeLine = L.polyline(routePoints, {
+            color: color,
+            weight: 3,
+            opacity: 0.8,
+            className: 'animated-route'
+        }).addTo(map);
+
+        // Fit Bounds to show the entire route
+        map.fitBounds(routeLine.getBounds(), { padding: [20, 20] });
+
+        // Add Ship Marker somewhere in the middle
+        const shipIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: `<div style="background: ${color}; color: ${isRedirected ? 'white' : 'black'}; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px ${color};">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">${isRedirected ? 'alt_route' : 'sailing'}</span>
+                   </div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+
+        // Initialize marker
+        let progress = 0.1; // start at 10%
+        let shipSpeed = 0.00005; // EVEN SLOWER movement
+        const shipMarker = L.marker(routePoints[0], { icon: shipIcon }).addTo(map);
+        
+        // Add Port Origin & Dest Markers
+        const portIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: `<div style="background: rgba(10,17,40,0.8); color: white; border: 2px solid var(--cyan-glow); border-radius: 4px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">anchor</span>
+                   </div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+        
+        L.marker(routePoints[0], { icon: portIcon }).addTo(map);
+        L.marker(routePoints[routePoints.length - 1], { icon: portIcon }).addTo(map);
+
+        // Helper function for interpolation
+        function getPointOnRoute(route, currentProgress) {
+            if(!route || route.length < 2) return route && route[0] ? route[0] : [0,0];
+            let totalSegments = route.length - 1;
+            let scaledProgress = currentProgress * totalSegments;
+            let index = Math.floor(scaledProgress);
+            if(index >= totalSegments) return route[totalSegments];
+            
+            let remainder = scaledProgress - index;
+            let p1 = route[index];
+            let p2 = route[index + 1];
+            
+            let lat = p1[0] + (p2[0] - p1[0]) * remainder;
+            let lng = p1[1] + (p2[1] - p1[1]) * remainder;
+            return [lat, lng];
+        }
+
+        // Animation Loop
+        function animateShip() {
+            progress += shipSpeed;
+            if(progress > 1) progress = 0; // loop back
+            
+            let newLatLng = getPointOnRoute(routePoints, progress);
+            shipMarker.setLatLng(newLatLng);
+            
+            requestAnimationFrame(animateShip);
+        }
+
+        // Start animation
+        animateShip();
+    });
+</script>

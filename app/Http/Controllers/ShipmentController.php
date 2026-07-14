@@ -100,7 +100,66 @@ class ShipmentController extends Controller
         if (Auth::user()->role !== 'admin' && $shipment->user_id !== Auth::id()) {
             abort(403);
         }
-        return view('shipments.redirect', compact('shipment'));
+
+        $scenarios = [
+            [
+                'country' => 'Germany',
+                'port' => 'Port of Hamburg',
+                'reason' => 'AI detected high port congestion at ' . $shipment->destination_port . '. Rerouting to Hamburg provides a 12% profit increase due to local commodity shortages.',
+                'profit_multiplier' => 1.12
+            ],
+            [
+                'country' => 'United States',
+                'port' => 'Port of Savannah',
+                'reason' => 'Weather anomaly (category 4 storm) detected on the current route. Rerouting to Savannah avoids the storm while fulfilling secondary demand for ' . $shipment->commodity . '.',
+                'profit_multiplier' => 1.05
+            ],
+            [
+                'country' => 'Japan',
+                'port' => 'Port of Yokohama',
+                'reason' => 'Sudden inflation spike in ' . $shipment->destination_country . ' reduces purchasing power. Japanese markets offer a 20% premium for ' . $shipment->commodity . ' this week.',
+                'profit_multiplier' => 1.20
+            ],
+            [
+                'country' => 'South Africa',
+                'port' => 'Port of Cape Town',
+                'reason' => 'Geopolitical tensions in the Red Sea detected. Diverting via Cape of Good Hope increases transit time but secures cargo and capitalizes on regional shortages.',
+                'profit_multiplier' => 1.08
+            ]
+        ];
+        
+        $scenario = $scenarios[array_rand($scenarios)];
+
+        // Generate dynamic mock AI suggestion based on shipment
+        $aiSuggestion = [
+            'country' => $scenario['country'],
+            'port' => $scenario['port'],
+            'reason' => $scenario['reason'],
+            'estimated_arrival' => now()->addDays(rand(10, 25))->format('Y-m-d'),
+            'shipping_cost' => ($shipment->shipping_cost ?? rand(1000, 5000)) + rand(500, 2000),
+            'estimated_profit' => ($shipment->estimated_profit ?? rand(10000, 50000)) * $scenario['profit_multiplier'],
+        ];
+
+        // Store into AiRecommendation for history tracking
+        \App\Models\AiRecommendation::create([
+            'user_id' => Auth::id(),
+            'shipment_id' => $shipment->id,
+            'type' => 'redirect',
+            'recommended_country' => $aiSuggestion['country'],
+            'recommended_port' => $aiSuggestion['port'],
+            'recommended_commodity' => $shipment->commodity,
+            'estimated_revenue' => $shipment->estimated_revenue ?? 0,
+            'estimated_profit' => $aiSuggestion['estimated_profit'],
+            'shipping_cost' => $aiSuggestion['shipping_cost'],
+            'risk_score' => rand(10, 40),
+            'opportunity_score' => rand(70, 99),
+            'confidence_score' => rand(85, 98),
+            'reason' => $aiSuggestion['reason'],
+            'advantages' => 'Higher profit, avoided risk.',
+            'status' => 'Pending'
+        ]);
+
+        return view('shipments.redirect', compact('shipment', 'aiSuggestion'));
     }
 
     public function storeRedirect(RedirectShipmentRequest $request, Shipment $shipment)
@@ -136,6 +195,11 @@ class ShipmentController extends Controller
             'estimated_profit' => $data['estimated_profit'],
             'status' => 'Redirected'
         ]);
+
+        // Mark recommendation as accepted
+        \App\Models\AiRecommendation::where('shipment_id', $shipment->id)
+            ->where('status', 'Pending')
+            ->update(['status' => 'Accepted']);
 
         $shipment->activities()->create([
             'status' => 'Redirected',

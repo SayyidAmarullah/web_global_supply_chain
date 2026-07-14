@@ -31,6 +31,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/ports', [\App\Http\Controllers\IntelligenceController::class, 'ports'])->name('ports');
     });
 
+    // AI Decision Routes
+    Route::prefix('ai-decision')->name('ai.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\AiDecisionController::class, 'index'])->name('index');
+        Route::match(['get', 'post'], '/simulate', [\App\Http\Controllers\AiDecisionController::class, 'simulate'])->name('simulate');
+        Route::get('/history', [\App\Http\Controllers\AiDecisionController::class, 'history'])->name('history');
+    });
+
     // Core Shipment Routes
     Route::resource('shipments', ShipmentController::class);
 });
