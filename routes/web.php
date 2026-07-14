@@ -38,6 +38,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/history', [\App\Http\Controllers\AiDecisionController::class, 'history'])->name('history');
     });
 
+    // Analytics Routes
+    Route::prefix('analytics')->name('analytics.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('index');
+        Route::get('/export', [\App\Http\Controllers\AnalyticsController::class, 'export'])->name('export');
+    });
+
     // Core Shipment Routes
     Route::resource('shipments', ShipmentController::class);
 });

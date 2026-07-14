@@ -145,7 +145,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('analytics.index') }}" class="{{ request()->routeIs('analytics.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">trending_up</span>
                             <span class="text">Trade Analytics</span>
                         </a>
