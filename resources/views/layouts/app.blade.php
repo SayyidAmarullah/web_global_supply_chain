@@ -103,25 +103,25 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('intelligence.index') }}" class="{{ request()->routeIs('intelligence.*') ? 'active' : '' }}">
+                        <a href="{{ route('intelligence.index') }}" class="{{ request()->routeIs('intelligence.index') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">language</span>
                             <span class="text">Global Intelligence</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('ai.index') }}" class="{{ request()->routeIs('ai.*') ? 'active' : '' }}">
-                            <span class="material-symbols-outlined icon text-purple-neon" style="color: var(--purple-neon);">psychology</span>
-                            <span class="text text-white fw-bold">AI Decision Support</span>
+                        <a href="{{ route('ai.index') }}" class="menu-item-ai {{ request()->routeIs('ai.*') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon ai-icon">psychology</span>
+                            <span class="text fw-bold ai-text">AI Decision Support</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('intelligence.ports') }}">
+                        <a href="{{ route('intelligence.ports') }}" class="{{ request()->routeIs('intelligence.ports') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">anchor</span>
                             <span class="text">Port Intel</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('intelligence.commodities') }}">
+                        <a href="{{ route('intelligence.commodities') }}" class="{{ request()->routeIs('intelligence.commodities') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">inventory_2</span>
                             <span class="text">Commodities</span>
                         </a>
@@ -150,6 +150,14 @@
                             <span class="text">Trade Analytics</span>
                         </a>
                     </li>
+                    @if(Auth::check() && Auth::user()->role === 'admin')
+                    <li>
+                        <a href="{{ route('admin.index') }}" class="{{ request()->routeIs('admin.*') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon text-danger">admin_panel_settings</span>
+                            <span class="text text-danger">Administration</span>
+                        </a>
+                    </li>
+                    @endif
                     <li>
                         <a href="#">
                             <span class="material-symbols-outlined icon">newspaper</span>

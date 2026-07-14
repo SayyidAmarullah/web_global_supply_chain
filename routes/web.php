@@ -28,7 +28,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [\App\Http\Controllers\IntelligenceController::class, 'index'])->name('index');
         Route::get('/countries', [\App\Http\Controllers\IntelligenceController::class, 'countries'])->name('countries');
         Route::get('/commodities', [\App\Http\Controllers\IntelligenceController::class, 'commodities'])->name('commodities');
+        Route::get('/commodities/{commodity}/prices', [\App\Http\Controllers\IntelligenceController::class, 'commodityPrices'])->name('commodities.prices');
         Route::get('/ports', [\App\Http\Controllers\IntelligenceController::class, 'ports'])->name('ports');
+        Route::post('/deep-analysis', [\App\Http\Controllers\IntelligenceController::class, 'deepAnalysis'])->name('deep-analysis');
     });
 
     // AI Decision Routes
@@ -46,6 +48,16 @@ Route::middleware('auth')->group(function () {
 
     // Core Shipment Routes
     Route::resource('shipments', ShipmentController::class);
+
+    // Administration Module
+    Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\AdminController::class, 'index'])->name('index');
+        Route::get('/users', [\App\Http\Controllers\AdminController::class, 'users'])->name('users');
+        Route::get('/master-data', [\App\Http\Controllers\AdminController::class, 'masterData'])->name('master-data');
+        Route::get('/api-management', [\App\Http\Controllers\AdminController::class, 'apiManagement'])->name('api-management');
+        Route::get('/settings', [\App\Http\Controllers\AdminController::class, 'settings'])->name('settings');
+        Route::get('/logs', [\App\Http\Controllers\AdminController::class, 'logs'])->name('logs');
+    });
 });
 
 require __DIR__.'/auth.php';
