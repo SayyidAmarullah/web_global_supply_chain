@@ -127,13 +127,13 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('intelligence.currencies') }}" class="{{ request()->routeIs('intelligence.currencies') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">payments</span>
-                            <span class="text">Currencies</span>
+                            <span class="text">Currencies & Macro</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('intelligence.weather') }}" class="{{ request()->routeIs('intelligence.weather') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">storm</span>
                             <span class="text">Weather Intel</span>
                         </a>

@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/countries', [\App\Http\Controllers\IntelligenceController::class, 'countries'])->name('countries');
         Route::get('/commodities', [\App\Http\Controllers\IntelligenceController::class, 'commodities'])->name('commodities');
         Route::get('/commodities/{commodity}/prices', [\App\Http\Controllers\IntelligenceController::class, 'commodityPrices'])->name('commodities.prices');
+        Route::get('/currencies', [\App\Http\Controllers\IntelligenceController::class, 'currencies'])->name('currencies');
+        Route::get('/weather', [\App\Http\Controllers\IntelligenceController::class, 'weather'])->name('weather');
         Route::get('/ports', [\App\Http\Controllers\IntelligenceController::class, 'ports'])->name('ports');
         Route::post('/deep-analysis', [\App\Http\Controllers\IntelligenceController::class, 'deepAnalysis'])->name('deep-analysis');
     });
