@@ -6,10 +6,10 @@
     $variants = [
         'primary' => 'btn-primary shadow-sm hover-neon-text',
         'secondary' => 'btn-secondary text-white',
-        'outline' => 'btn-outline-light text-muted hover-text-white',
-        'danger' => 'btn-danger bg-opacity-10 text-danger border-danger border-opacity-50',
-        'warning' => 'btn-warning bg-opacity-10 text-warning border-warning border-opacity-50',
-        'success' => 'btn-success bg-opacity-10 text-success border-success border-opacity-50',
+        'outline' => 'btn-outline-light text-muted hover-text-dark',
+        'danger' => 'bg-danger bg-opacity-10 text-danger border border-danger border-opacity-50',
+        'warning' => 'bg-warning bg-opacity-10 text-warning border border-warning border-opacity-50',
+        'success' => 'bg-success bg-opacity-10 text-success border border-success border-opacity-50',
         'ghost' => 'btn-link text-muted text-decoration-none hover-neon-text',
     ];
 

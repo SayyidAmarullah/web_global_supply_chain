@@ -139,7 +139,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('intelligence.risk-alerts') }}" class="{{ request()->routeIs('intelligence.risk-alerts') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon text-warning">security</span>
                             <span class="text text-warning">Risk Alerts</span>
                         </a>
@@ -159,7 +159,7 @@
                     </li>
                     @endif
                     <li>
-                        <a href="#">
+                        <a href="{{ route('intelligence.news') }}" class="{{ request()->routeIs('intelligence.news') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">newspaper</span>
                             <span class="text">Global News</span>
                         </a>

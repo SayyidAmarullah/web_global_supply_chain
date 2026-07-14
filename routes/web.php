@@ -25,13 +25,15 @@ Route::middleware('auth')->group(function () {
 
     // Global Intelligence Routes
     Route::prefix('intelligence')->name('intelligence.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\IntelligenceController::class, 'index'])->name('index');
+        Route::get('/', [IntelligenceController::class, 'index'])->name('index');
         Route::get('/countries', [\App\Http\Controllers\IntelligenceController::class, 'countries'])->name('countries');
         Route::get('/commodities', [\App\Http\Controllers\IntelligenceController::class, 'commodities'])->name('commodities');
         Route::get('/commodities/{commodity}/prices', [\App\Http\Controllers\IntelligenceController::class, 'commodityPrices'])->name('commodities.prices');
         Route::get('/currencies', [\App\Http\Controllers\IntelligenceController::class, 'currencies'])->name('currencies');
         Route::get('/weather', [\App\Http\Controllers\IntelligenceController::class, 'weather'])->name('weather');
         Route::get('/ports', [\App\Http\Controllers\IntelligenceController::class, 'ports'])->name('ports');
+        Route::get('/risk-alerts', [\App\Http\Controllers\IntelligenceController::class, 'riskAlerts'])->name('risk-alerts');
+        Route::get('/news', [\App\Http\Controllers\IntelligenceController::class, 'news'])->name('news');
         Route::post('/deep-analysis', [\App\Http\Controllers\IntelligenceController::class, 'deepAnalysis'])->name('deep-analysis');
     });
 
