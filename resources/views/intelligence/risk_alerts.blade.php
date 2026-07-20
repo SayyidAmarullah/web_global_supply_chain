@@ -10,6 +10,12 @@
     backdrop-filter: blur(24px);
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+.glow-warning {
+    border: 2px solid #ffc107 !important;
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.6), inset 0 0 10px rgba(255, 193, 7, 0.2);
+}
+
 .risk-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .risk-card:hover { transform: translateY(-5px); }
 
@@ -39,7 +45,6 @@
     <header class="d-flex justify-content-between align-items-center mb-2">
         <div>
             <h2 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
-                <span class="material-symbols-outlined fs-2 text-warning">security</span>
                 Risk Scoring Engine
             </h2>
             <p class="text-muted mb-0 fs-7">Custom Algorithmic Engine: Weather + Inflation + FX + Sentiment</p>
@@ -54,7 +59,7 @@
     <div class="row g-4 flex-grow-1">
         <!-- Left Panel: Country Selector -->
         <div id="countryGridContainer" class="col-lg-3 d-flex flex-column gap-4">
-            <div class="glass-panel p-4 rounded-4 border-start border-4 border-warning" style="height: 800px; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="glass-panel p-4 rounded-4 glow-warning" style="height: 800px; overflow: hidden; display: flex; flex-direction: column;">
                 <h6 class="text-white fw-bold mb-3">Select Target</h6>
                 
                 <div class="input-group mb-4">

@@ -6,7 +6,6 @@
     <div class="d-flex justify-content-between align-items-center flex-shrink-0">
         <div>
             <h3 class="text-white fw-bold tracking-tight mb-1">
-                <span class="material-symbols-outlined text-info align-middle fs-2 me-2">newspaper</span>
                 Global News Intelligence
             </h3>
             <span class="text-muted fs-7">Real-time aggregated global supply chain and economic news</span>
@@ -38,12 +37,12 @@
             </div>
             
             <!-- Country Filter -->
-            <div class="d-flex align-items-center gap-2 ms-3 bg-white bg-opacity-5 px-3 py-1 rounded-pill border border-secondary border-opacity-25">
+            <div class="d-flex align-items-center gap-2 ms-3 bg-dark px-3 py-1 rounded-pill border border-secondary border-opacity-25">
                 <span class="material-symbols-outlined text-muted fs-5">public</span>
-                <select id="countryFilter" class="form-select form-select-sm bg-transparent border-0 text-adaptive fw-bold shadow-none cursor-pointer" onchange="setCountry(this.value)" style="min-width: 140px; cursor: pointer;">
-                    <option value="any" style="color: #000;">Global (All)</option>
+                <select id="countryFilter" class="form-select form-select-sm bg-transparent border-0 text-white fw-bold shadow-none cursor-pointer" onchange="setCountry(this.value)" style="min-width: 140px; cursor: pointer;">
+                    <option value="any" style="color: #fff; background: #212529;">Global (All)</option>
                     @foreach($countries as $country)
-                        <option value="{{ strtolower($country['code']) }}" style="color: #000;">{{ $country['name'] }}</option>
+                        <option value="{{ strtolower($country['code']) }}" style="color: #fff; background: #212529;">{{ $country['name'] }}</option>
                     @endforeach
                 </select>
             </div>

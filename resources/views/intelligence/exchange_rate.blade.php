@@ -13,6 +13,11 @@
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
+.glow-info {
+    border: 2px solid #0dcaf0 !important;
+    box-shadow: 0 0 20px rgba(13, 202, 240, 0.6), inset 0 0 10px rgba(13, 202, 240, 0.2);
+}
+
 /* Light Mode Overrides */
 :root[data-theme="light"] .glass-panel {
     border: 1px solid rgba(0,0,0,0.05) !important;
@@ -29,7 +34,6 @@
     <header class="d-flex justify-content-between align-items-center mb-2">
         <div>
             <h2 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
-                <span class="material-symbols-outlined fs-2 text-info">currency_exchange</span>
                 Advanced FX Analytics
             </h2>
             <p class="text-muted mb-0 fs-7">Real-time global currency exchange rates & multi-dimensional analytics</p>
@@ -52,7 +56,7 @@
     <div class="row g-4">
         <!-- Left Panel: Currency Selector -->
         <div class="col-lg-3 d-flex flex-column gap-4">
-            <div class="glass-panel p-4 rounded-4 border-start border-4 border-info" style="height: 800px; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="glass-panel p-4 rounded-4 glow-info" style="height: 800px; overflow: hidden; display: flex; flex-direction: column;">
                 <h6 class="text-white fw-bold mb-3">Compare Target Currency</h6>
                 
                 <div class="input-group mb-4">

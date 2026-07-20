@@ -41,6 +41,16 @@
     opacity: 0.6;
 }
 
+/* Glowing borders */
+.glow-info {
+    border: 2px solid #0dcaf0 !important;
+    box-shadow: 0 0 20px rgba(13, 202, 240, 0.6), inset 0 0 10px rgba(13, 202, 240, 0.2);
+}
+.glow-warning {
+    border: 2px solid #ffc107 !important;
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.6), inset 0 0 10px rgba(255, 193, 7, 0.2);
+}
+
 /* Light Mode Overrides */
 :root[data-theme="light"] .glass-panel {
     border: 1px solid rgba(0,0,0,0.05) !important;
@@ -72,7 +82,7 @@
     <div class="row g-4 mb-2 position-relative align-items-center">
         <!-- Country A -->
         <div class="col-md-5">
-            <div class="glass-panel p-4 rounded-4 border-top border-4 border-info">
+            <div class="glass-panel p-4 rounded-4 glow-info">
                 <label class="text-muted fs-8 text-uppercase fw-bold mb-2">Country A</label>
                 <select id="countryA" class="form-select bg-dark border-secondary text-white py-3 shadow-none">
                     @foreach($countries as $country)
@@ -92,7 +102,7 @@
 
         <!-- Country B -->
         <div class="col-md-5">
-            <div class="glass-panel p-4 rounded-4 border-top border-4 border-warning">
+            <div class="glass-panel p-4 rounded-4 glow-warning">
                 <label class="text-muted fs-8 text-uppercase fw-bold mb-2">Country B</label>
                 <select id="countryB" class="form-select bg-dark border-secondary text-white py-3 shadow-none">
                     @foreach($countries as $country)

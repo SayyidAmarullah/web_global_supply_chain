@@ -6,7 +6,6 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
             <h1 class="h3 fw-bold text-white mb-0 d-flex align-items-center gap-2">
-                <span class="material-symbols-outlined text-success fs-2">query_stats</span> 
                 Data Visualization Dashboard
             </h1>
             <p class="text-muted fs-7 mt-1">Global macroeconomic trends and risk intelligence</p>

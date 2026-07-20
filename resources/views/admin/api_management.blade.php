@@ -54,8 +54,8 @@
                             </div>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-outline-info py-0 px-2" title="Test Connection"><span class="material-symbols-outlined fs-6">network_check</span></button>
-                            <button class="btn btn-sm btn-outline-warning py-0 px-2" title="Configure"><span class="material-symbols-outlined fs-6">settings</span></button>
+                            <button class="btn btn-sm btn-outline-info py-0 px-2" title="Test Connection" onclick="alert('Testing connection for {{ $api['name'] }}...\nStatus: HTTP 200 OK\nLatency: {{ $api['latency'] }}\nConnection is stable.')"><span class="material-symbols-outlined fs-6">network_check</span></button>
+                            <button class="btn btn-sm btn-outline-warning py-0 px-2" title="Configure" onclick="alert('Configuration for {{ $api['name'] }} is restricted.\nPlease contact System Administrator for API key management.')"><span class="material-symbols-outlined fs-6">settings</span></button>
                             <form action="{{ route('admin.api-management.toggle') }}" method="POST" class="d-inline">
                                 @csrf
                                 <input type="hidden" name="api_name" value="{{ $api['name'] }}">

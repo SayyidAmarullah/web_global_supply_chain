@@ -41,6 +41,16 @@
     opacity: 0.6;
 }
 
+/* Glowing borders */
+.glow-info {
+    border: 2px solid #0dcaf0 !important;
+    box-shadow: 0 0 20px rgba(13, 202, 240, 0.6), inset 0 0 10px rgba(13, 202, 240, 0.2);
+}
+.glow-warning {
+    border: 2px solid #ffc107 !important;
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.6), inset 0 0 10px rgba(255, 193, 7, 0.2);
+}
+
 /* Light Mode Overrides */
 :root[data-theme="light"] .glass-panel {
     border: 1px solid rgba(0,0,0,0.05) !important;
@@ -56,7 +66,6 @@
     <header class="d-flex justify-content-between align-items-center mb-2">
         <div>
             <h2 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
-                <span class="material-symbols-outlined fs-2 text-warning">local_shipping</span>
                 Commodity Comparison Engine
             </h2>
             <p class="text-muted mb-0 fs-7">Compare Price, Trend, and Supply Chain Risk</p>
@@ -72,7 +81,7 @@
     <div class="row g-4 mb-2 position-relative align-items-center">
         <!-- Commodity A -->
         <div class="col-md-5">
-            <div class="glass-panel p-4 rounded-4 border-top border-4 border-info">
+            <div class="glass-panel p-4 rounded-4 glow-info">
                 <label class="text-muted fs-8 text-uppercase fw-bold mb-2">Commodity A</label>
                 <select id="commodityA" class="form-select bg-dark border-secondary text-white py-3 shadow-none">
                     @foreach($commodities as $index => $commodity)
@@ -89,7 +98,7 @@
 
         <!-- Commodity B -->
         <div class="col-md-5">
-            <div class="glass-panel p-4 rounded-4 border-top border-4 border-warning">
+            <div class="glass-panel p-4 rounded-4 glow-warning">
                 <label class="text-muted fs-8 text-uppercase fw-bold mb-2">Commodity B</label>
                 <select id="commodityB" class="form-select bg-dark border-secondary text-white py-3 shadow-none">
                     @foreach($commodities as $index => $commodity)

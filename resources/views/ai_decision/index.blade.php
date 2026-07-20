@@ -14,7 +14,7 @@
             <a href="{{ route('ai.history') }}" class="btn btn-outline-secondary d-flex align-items-center gap-2 px-3 py-2">
                 <span class="material-symbols-outlined fs-5">history</span> History
             </a>
-            <a href="{{ route('ai.simulate') }}" class="btn btn-purple d-flex align-items-center gap-2 px-3 py-2">
+            <a href="{{ route('ai.simulate') }}" class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2">
                 <span class="material-symbols-outlined fs-5">calculate</span> Profit Simulator
             </a>
         </div>

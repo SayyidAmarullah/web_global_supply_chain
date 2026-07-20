@@ -85,7 +85,6 @@
     <header class="d-flex justify-content-between align-items-center mb-2">
         <div>
             <h2 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
-                <span class="material-symbols-outlined fs-2 text-warning">attach_money</span>
                 Global Commodities Market
             </h2>
             <p class="text-muted mb-0 fs-7">Real-time pricing, volatility trends, and AI-driven market predictions</p>

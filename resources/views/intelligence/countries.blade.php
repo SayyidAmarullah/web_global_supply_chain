@@ -14,6 +14,12 @@
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
+/* Glowing borders */
+.glow-primary {
+    border: 2px solid #0d6efd !important;
+    box-shadow: 0 0 20px rgba(13, 110, 253, 0.6), inset 0 0 10px rgba(13, 110, 253, 0.2);
+}
+
 .kpi-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 
@@ -54,7 +60,6 @@
     <header class="d-flex justify-content-between align-items-center mb-2">
         <div>
             <h2 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
-                <span class="material-symbols-outlined fs-2 text-primary">public</span>
                 Global Country Dashboard
             </h2>
             <p class="text-muted mb-0 fs-7">Unified Intelligence: Macroeconomics & Environmental Data</p>
@@ -69,7 +74,7 @@
     <div class="row g-4 flex-grow-1">
         <!-- Left Panel: Country Selector -->
         <div id="countryGridContainer" class="col-lg-3 d-flex flex-column gap-4">
-            <div class="glass-panel p-4 rounded-4 border-start border-4 border-primary" style="height: 800px; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="glass-panel p-4 rounded-4 glow-primary" style="height: 800px; overflow: hidden; display: flex; flex-direction: column;">
                 <h6 class="text-white fw-bold mb-3">Select Country</h6>
                 
                 <div class="input-group mb-4">
