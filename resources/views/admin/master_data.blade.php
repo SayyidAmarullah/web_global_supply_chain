@@ -20,7 +20,14 @@
                 <div class="p-4 text-center">
                     <h2 class="display-4 fw-bold text-white mb-0">{{ number_format($count) }}</h2>
                     <span class="text-muted fs-7 d-block mt-2">Active Records</span>
-                    <button class="btn btn-outline-primary mt-3 w-100">Manage {{ $key }}</button>
+                    @php
+                        $route = '#';
+                        if ($key == 'Countries') $route = route('intelligence.countries');
+                        elseif ($key == 'Ports') $route = route('admin.ports.index');
+                        elseif ($key == 'Commodities') $route = route('intelligence.commodities');
+                        elseif ($key == 'Currencies') $route = route('intelligence.currencies');
+                    @endphp
+                    <a href="{{ $route }}" class="btn btn-outline-primary mt-3 w-100">Manage {{ $key }}</a>
                 </div>
             </x-card>
         </div>

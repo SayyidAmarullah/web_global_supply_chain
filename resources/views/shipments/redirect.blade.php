@@ -58,12 +58,22 @@
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label text-muted fs-7 fw-medium text-uppercase">New Destination Country</label>
-                            <input type="text" name="destination_country" id="ai-country" class="form-control bg-transparent text-white border-secondary @error('destination_country') is-invalid @enderror" required value="{{ old('destination_country') }}" placeholder="e.g. Germany">
+                            <select name="destination_country" id="ai-country" class="form-select bg-transparent text-white border-secondary @error('destination_country') is-invalid @enderror" required>
+                                <option value="" disabled selected style="background: #041326;">Select Country</option>
+                                @foreach($countries as $country)
+                                    <option value="{{ $country }}" style="background: #041326;" {{ old('destination_country') == $country ? 'selected' : '' }}>{{ $country }}</option>
+                                @endforeach
+                            </select>
                             @error('destination_country')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-muted fs-7 fw-medium text-uppercase">New Destination Port</label>
-                            <input type="text" name="destination_port" id="ai-port" class="form-control bg-transparent text-white border-secondary @error('destination_port') is-invalid @enderror" required value="{{ old('destination_port') }}" placeholder="e.g. Port of Hamburg">
+                            <select name="destination_port" id="ai-port" class="form-select bg-transparent text-white border-secondary @error('destination_port') is-invalid @enderror" required>
+                                <option value="" disabled selected style="background: #041326;">Select Port</option>
+                                @foreach($ports as $port)
+                                    <option value="{{ $port }}" style="background: #041326;" {{ old('destination_port') == $port ? 'selected' : '' }}>{{ $port }}</option>
+                                @endforeach
+                            </select>
                             @error('destination_port')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>
@@ -102,9 +112,42 @@
 </main>
 
 <script>
+    const portsData = {!! isset($portsMapping) ? json_encode($portsMapping) : '[]' !!};
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const countrySelect = document.getElementById('ai-country');
+        const portSelect = document.getElementById('ai-port');
+        
+        countrySelect.addEventListener('change', function() {
+            const selectedCountry = this.value;
+            const currentPort = portSelect.value;
+            
+            portSelect.innerHTML = '<option value="" disabled selected style="background: #041326;">Select Port</option>';
+            
+            const filteredPorts = portsData.filter(p => p.country === selectedCountry);
+            
+            filteredPorts.forEach(port => {
+                const option = document.createElement('option');
+                option.value = port.name;
+                option.style.background = '#041326';
+                option.textContent = port.name;
+                if (port.name === currentPort) option.selected = true;
+                portSelect.appendChild(option);
+            });
+        });
+
+        if (portsData.length > 0 && countrySelect.value) {
+            countrySelect.dispatchEvent(new Event('change'));
+        }
+    });
+
     function applyAiSuggestion() {
-        document.getElementById('ai-country').value = "{{ $aiSuggestion['country'] }}";
+        const countrySelect = document.getElementById('ai-country');
+        countrySelect.value = "{{ $aiSuggestion['country'] }}";
+        countrySelect.dispatchEvent(new Event('change')); // Trigger port filter
+        
         document.getElementById('ai-port').value = "{{ $aiSuggestion['port'] }}";
+        
         document.getElementById('ai-eta').value = "{{ $aiSuggestion['estimated_arrival'] }}";
         document.getElementById('ai-cost').value = "{{ number_format($aiSuggestion['shipping_cost'], 2, '.', '') }}";
         document.getElementById('ai-profit').value = "{{ number_format($aiSuggestion['estimated_profit'], 2, '.', '') }}";

@@ -11,7 +11,7 @@
     </div>
 
     <x-card title="Shipment Details" icon="inventory_2" glow="cyan">
-        <form action="{{ route('shipments.store') }}" method="POST" class="p-4">
+        <form action="{{ route('shipments.store') }}" method="POST" class="p-4" id="createShipmentForm">
             @csrf
             
             <div class="row g-4 mb-4">
@@ -25,7 +25,12 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label text-muted fs-7 fw-medium text-uppercase">Commodity</label>
-                    <input type="text" name="commodity" class="form-control bg-transparent text-white border-secondary @error('commodity') is-invalid @enderror" required placeholder="e.g. Crude Oil, Wheat, Electronics" value="{{ old('commodity') }}">
+                    <select name="commodity" class="form-select bg-transparent text-white border-secondary @error('commodity') is-invalid @enderror" required>
+                        <option value="" disabled selected style="background: #041326;">Select Commodity</option>
+                        @foreach($commodities as $commodity)
+                            <option value="{{ $commodity }}" style="background: #041326;" {{ old('commodity') == $commodity ? 'selected' : '' }}>{{ $commodity }}</option>
+                        @endforeach
+                    </select>
                     @error('commodity')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
             </div>
@@ -38,12 +43,22 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label text-muted fs-7 fw-medium text-uppercase">Unit</label>
-                    <input type="text" name="unit" class="form-control bg-transparent text-white border-secondary @error('unit') is-invalid @enderror" required placeholder="e.g. Metric Tons, TEU" value="{{ old('unit') }}">
+                    <select name="unit" class="form-select bg-transparent text-white border-secondary @error('unit') is-invalid @enderror" required>
+                        <option value="" disabled selected style="background: #041326;">Select Unit</option>
+                        @foreach($units as $unit)
+                            <option value="{{ $unit }}" style="background: #041326;" {{ old('unit') == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                        @endforeach
+                    </select>
                     @error('unit')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-4">
                     <label class="form-label text-muted fs-7 fw-medium text-uppercase">Container Type</label>
-                    <input type="text" name="container_type" class="form-control bg-transparent text-white border-secondary @error('container_type') is-invalid @enderror" required placeholder="e.g. Dry Van 40ft" value="{{ old('container_type') }}">
+                    <select name="container_type" class="form-select bg-transparent text-white border-secondary @error('container_type') is-invalid @enderror" required>
+                        <option value="" disabled selected style="background: #041326;">Select Type</option>
+                        @foreach($containerTypes as $type)
+                            <option value="{{ $type }}" style="background: #041326;" {{ old('container_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                        @endforeach
+                    </select>
                     @error('container_type')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
             </div>
@@ -53,22 +68,42 @@
                     <h5 class="text-white fw-bold mb-3">Origin</h5>
                     <div class="mb-3">
                         <label class="form-label text-muted fs-7 fw-medium text-uppercase">Country</label>
-                        <input type="text" name="origin_country" class="form-control bg-transparent text-white border-secondary @error('origin_country') is-invalid @enderror" required value="{{ old('origin_country') }}">
+                        <select name="origin_country" id="origin_country" class="form-select bg-transparent text-white border-secondary @error('origin_country') is-invalid @enderror" required>
+                            <option value="" disabled selected style="background: #041326;">Select Country</option>
+                            @foreach($countries as $country)
+                                <option value="{{ $country }}" style="background: #041326;" {{ old('origin_country') == $country ? 'selected' : '' }}>{{ $country }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div>
                         <label class="form-label text-muted fs-7 fw-medium text-uppercase">Port</label>
-                        <input type="text" name="origin_port" class="form-control bg-transparent text-white border-secondary @error('origin_port') is-invalid @enderror" required value="{{ old('origin_port') }}">
+                        <select name="origin_port" id="origin_port" class="form-select bg-transparent text-white border-secondary @error('origin_port') is-invalid @enderror" required>
+                            <option value="" disabled selected style="background: #041326;">Select Port</option>
+                            @foreach($ports as $port)
+                                <option value="{{ $port }}" style="background: #041326;" {{ old('origin_port') == $port ? 'selected' : '' }}>{{ $port }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <h5 class="text-white fw-bold mb-3">Destination</h5>
                     <div class="mb-3">
                         <label class="form-label text-muted fs-7 fw-medium text-uppercase">Country</label>
-                        <input type="text" name="destination_country" class="form-control bg-transparent text-white border-secondary @error('destination_country') is-invalid @enderror" required value="{{ old('destination_country') }}">
+                        <select name="destination_country" id="destination_country" class="form-select bg-transparent text-white border-secondary @error('destination_country') is-invalid @enderror" required>
+                            <option value="" disabled selected style="background: #041326;">Select Country</option>
+                            @foreach($countries as $country)
+                                <option value="{{ $country }}" style="background: #041326;" {{ old('destination_country') == $country ? 'selected' : '' }}>{{ $country }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div>
                         <label class="form-label text-muted fs-7 fw-medium text-uppercase">Port</label>
-                        <input type="text" name="destination_port" class="form-control bg-transparent text-white border-secondary @error('destination_port') is-invalid @enderror" required value="{{ old('destination_port') }}">
+                        <select name="destination_port" id="destination_port" class="form-select bg-transparent text-white border-secondary @error('destination_port') is-invalid @enderror" required>
+                            <option value="" disabled selected style="background: #041326;">Select Port</option>
+                            @foreach($ports as $port)
+                                <option value="{{ $port }}" style="background: #041326;" {{ old('destination_port') == $port ? 'selected' : '' }}>{{ $port }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>
@@ -79,4 +114,51 @@
         </form>
     </x-card>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const portsData = {!! isset($portsMapping) ? json_encode($portsMapping) : '[]' !!};
+    
+    function filterPorts(countrySelectId, portSelectId) {
+        const countrySelect = document.getElementById(countrySelectId);
+        const portSelect = document.getElementById(portSelectId);
+        
+        countrySelect.addEventListener('change', function() {
+            const selectedCountry = this.value;
+            const currentPort = portSelect.value; // Store currently selected port
+            
+            // Clear current options
+            portSelect.innerHTML = '<option value="" disabled selected style="background: #041326;">Select Port</option>';
+            
+            // Filter ports
+            const filteredPorts = portsData.filter(p => p.country === selectedCountry);
+            
+            // Re-populate options
+            filteredPorts.forEach(port => {
+                const option = document.createElement('option');
+                option.value = port.name;
+                option.style.background = '#041326';
+                option.textContent = port.name;
+                // Preserve selection if it matches
+                if (port.name === currentPort) option.selected = true;
+                portSelect.appendChild(option);
+            });
+        });
+    }
+
+    // Initialize sync logic
+    if (portsData.length > 0) {
+        filterPorts('origin_country', 'origin_port');
+        filterPorts('destination_country', 'destination_port');
+        
+        // Trigger change initially to filter existing selections on validation failure
+        if (document.getElementById('origin_country').value) {
+            document.getElementById('origin_country').dispatchEvent(new Event('change'));
+        }
+        if (document.getElementById('destination_country').value) {
+            document.getElementById('destination_country').dispatchEvent(new Event('change'));
+        }
+    }
+});
+</script>
 @endsection

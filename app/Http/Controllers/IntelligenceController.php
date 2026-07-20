@@ -28,8 +28,38 @@ class IntelligenceController extends Controller
 
     public function countries()
     {
-        // Placeholder for dedicated countries view
-        return redirect()->route('intelligence.index');
+        $favorites = \Illuminate\Support\Facades\DB::table('user_favorite_countries')
+            ->where('user_id', auth()->id())
+            ->pluck('country_code')
+            ->toArray();
+        return view('intelligence.countries', compact('favorites'));
+    }
+
+    public function toggleFavorite(\Illuminate\Http\Request $request, $code)
+    {
+        $userId = auth()->id();
+        $exists = \Illuminate\Support\Facades\DB::table('user_favorite_countries')
+            ->where('user_id', $userId)
+            ->where('country_code', $code)
+            ->exists();
+
+        if ($exists) {
+            \Illuminate\Support\Facades\DB::table('user_favorite_countries')
+                ->where('user_id', $userId)
+                ->where('country_code', $code)
+                ->delete();
+            $status = 'removed';
+        } else {
+            \Illuminate\Support\Facades\DB::table('user_favorite_countries')->insert([
+                'user_id' => $userId,
+                'country_code' => $code,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $status = 'added';
+        }
+
+        return response()->json(['success' => true, 'status' => $status]);
     }
 
     public function commodities(\Illuminate\Http\Request $request)
@@ -335,9 +365,17 @@ class IntelligenceController extends Controller
         return view('intelligence.weather');
     }
 
-    public function ports()
+    public function exchangeRate()
     {
-        $ports = $this->intelligenceService->getPortIntelligence(15);
+        return view('intelligence.exchange_rate');
+    }
+
+
+    public function ports(\Illuminate\Http\Request $request)
+    {
+        $search = $request->query('search');
+        // Back to 15 per page for performance, but pass search parameter for server-side filtering
+        $ports = $this->intelligenceService->getPortIntelligence(15, $search);
         $mapPorts = $this->intelligenceService->getAllPortMapData();
         $risk = $this->intelligenceService->getGlobalRiskScore();
         
@@ -451,7 +489,7 @@ class IntelligenceController extends Controller
             ['id' => 'TRT-105', 'title' => 'Labor Strike Planned', 'severity' => 'Medium', 'category' => 'Social', 'affected' => 'US East Coast Ports', 'time' => '8 hours ago'],
         ];
 
-        return view('intelligence.risk-alerts', compact('globalRisk', 'recommendations', 'criticalAlerts', 'totalAlerts', 'activeThreats'));
+        return view('intelligence.risk_alerts', compact('globalRisk', 'recommendations', 'criticalAlerts', 'totalAlerts', 'activeThreats'));
     }
 
     public function news()
@@ -460,7 +498,164 @@ class IntelligenceController extends Controller
         return view('intelligence.news', compact('countries'));
     }
 
-    private function getGlobalCountriesList()
+    public function fetchGoogleNews(\Illuminate\Http\Request $request)
+    {
+        $query = urlencode($request->input('q', 'logistics supply chain'));
+        $url = "https://news.google.com/rss/search?q={$query}&hl=en-US&gl=US&ceid=US:en";
+        
+        $articles = [];
+        
+        // Attempt to fetch from Google News
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(5)->get($url); // 5s timeout max
+            if ($response->successful()) {
+                $rss = simplexml_load_string($response->body());
+                $count = 0;
+                
+                if ($rss && isset($rss->channel->item)) {
+                    foreach ($rss->channel->item as $item) {
+                        if ($count >= 7) break;
+                        
+                        $descHtml = (string) $item->description;
+                        $imageUrl = '';
+                        if (preg_match('/<img[^>]+src="([^">]+)"/i', $descHtml, $matches)) {
+                            $imageUrl = $matches[1];
+                        }
+                        
+                        $cleanDesc = trim(preg_replace('/\s+/', ' ', strip_tags(str_replace(['<', '>'], [' <', '> '], $descHtml))));
+                        if (strlen($cleanDesc) > 200) {
+                            $cleanDesc = substr($cleanDesc, 0, 197) . '...';
+                        }
+                        
+                        $title = (string) $item->title;
+                        $sourceName = (string) $item->source;
+                        if (str_ends_with($title, ' - ' . $sourceName)) {
+                            $title = substr($title, 0, -(strlen(' - ' . $sourceName)));
+                        }
+
+                        $articles[] = [
+                            'title' => $title,
+                            'description' => $cleanDesc,
+                            'url' => (string) $item->link,
+                            'source' => [
+                                'name' => (string) $item->source
+                            ],
+                            'publishedAt' => date('c', strtotime((string) $item->pubDate)),
+                            'image' => $imageUrl
+                        ];
+                        $count++;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Silently fail Google News fetch so we can still return local articles
+        }
+        
+        try {
+            // --- Merge Local Internal Articles ---
+            $countryFilter = $request->input('country');
+            
+            $localQuery = \App\Models\AnalysisArticle::where('status', 'published');
+            
+            if (!empty($countryFilter)) {
+                $localQuery->where('country', $countryFilter);
+                $localArticles = $localQuery->latest()->limit(8)->get();
+            } else {
+                // If global view, only show articles that are truly "Global" (no specific country tag)
+                $localQuery->whereNull('country');
+                $localArticles = $localQuery->latest()->limit(2)->get();
+            }
+            
+            $internalArticles = [];
+            foreach ($localArticles as $article) {
+                $internalArticles[] = [
+                    'title' => '[Internal Analysis] ' . $article->title,
+                    'description' => \Illuminate\Support\Str::limit(strip_tags($article->content), 200),
+                    'url' => $article->source_url ?? 'javascript:void(0)',
+                    'source' => [
+                        'name' => 'Internal (' . ($article->country ?? 'Global') . ')'
+                    ],
+                    'publishedAt' => $article->created_at->format('c'),
+                    'image' => ''
+                ];
+            }
+            
+            // Prepend internal articles so they appear at the top
+            $articles = array_merge($internalArticles, $articles);
+            
+            // --- LEXICON BASED SENTIMENT ANALYSIS ---
+            $positiveWords = \Illuminate\Support\Facades\DB::table('positive_words')->pluck('word')->toArray();
+            $negativeWords = \Illuminate\Support\Facades\DB::table('negative_words')->pluck('word')->toArray();
+            
+            foreach ($articles as &$article) {
+                $fullText = strtolower($article['title'] . ' ' . $article['description']);
+                // Remove punctuation
+                $fullText = preg_replace('/[^\w\s]/', '', $fullText);
+                $words = explode(' ', $fullText);
+                $words = array_filter($words); // remove empty spaces
+                
+                $positiveScore = 0;
+                $negativeScore = 0;
+                $totalWords = count($words);
+                
+                if ($totalWords > 0) {
+                    foreach ($words as $word) {
+                        if (in_array($word, $positiveWords)) {
+                            $positiveScore++;
+                        }
+                        if (in_array($word, $negativeWords)) {
+                            $negativeScore++;
+                        }
+                    }
+                    
+                    $neutralScore = $totalWords - ($positiveScore + $negativeScore);
+                    
+                    $posPct = round(($positiveScore / $totalWords) * 100);
+                    $negPct = round(($negativeScore / $totalWords) * 100);
+                    $neuPct = round(($neutralScore / $totalWords) * 100);
+                    
+                    // Prevent total exceeding 100 due to rounding
+                    $diff = 100 - ($posPct + $negPct + $neuPct);
+                    $neuPct += $diff; 
+                } else {
+                    $posPct = 0;
+                    $negPct = 0;
+                    $neuPct = 100;
+                    $positiveScore = 0;
+                    $negativeScore = 0;
+                }
+                
+                if ($positiveScore > $negativeScore) {
+                    $sentiment = 'Positive';
+                } elseif ($negativeScore > $positiveScore) {
+                    $sentiment = 'Negative';
+                } else {
+                    $sentiment = 'Neutral';
+                }
+                
+                $article['sentiment'] = [
+                    'label' => $sentiment,
+                    'positive_pct' => $posPct,
+                    'neutral_pct' => $neuPct,
+                    'negative_pct' => $negPct,
+                    'positive_score' => $positiveScore,
+                    'negative_score' => $negativeScore
+                ];
+            }
+            
+            return response()->json([
+                'success' => true,
+                'articles' => $articles
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => ['Failed to fetch News: ' . $e->getMessage()]
+            ], 500);
+        }
+    }
+
+    public function getGlobalCountriesList()
     {
         return [
             ['code' => 'AF', 'name' => 'Afghanistan', 'region' => 'Asia'],
@@ -657,5 +852,17 @@ class IntelligenceController extends Controller
             ['code' => 'ZM', 'name' => 'Zambia', 'region' => 'Africa'],
             ['code' => 'ZW', 'name' => 'Zimbabwe', 'region' => 'Africa']
         ];
+    }
+
+    public function compare()
+    {
+        $countries = $this->getGlobalCountriesList();
+        return view('intelligence.compare', compact('countries'));
+    }
+
+    public function commodityCompare()
+    {
+        $commodities = $this->intelligenceService->getCommodityIntelligence();
+        return view('intelligence.commodity_compare', compact('commodities'));
     }
 }

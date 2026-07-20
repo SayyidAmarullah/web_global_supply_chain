@@ -25,7 +25,7 @@
             <div class="d-flex justify-content-between align-items-center mb-1">
                 <label for="password" class="form-label text-muted fw-medium fs-7 text-uppercase mb-0">Password</label>
                 @if (Route::has('password.request'))
-                    <a class="text-primary text-decoration-none fs-7 fw-medium" href="{{ route('password.request') }}">
+                    <a class="text-decoration-none fs-7 fw-medium" href="{{ route('password.request') }}" style="color: #38bdf8;">
                         Forgot password?
                     </a>
                 @endif
@@ -49,13 +49,13 @@
             </label>
         </div>
 
-        <button class="btn btn-primary w-100 py-2 mb-3 rounded-pill fw-medium shadow-sm d-flex justify-content-center align-items-center">
+        <button class="btn btn-gradient w-100 py-2 mb-4 rounded-pill fw-medium d-flex justify-content-center align-items-center">
             Sign In <span class="material-symbols-outlined ms-2 fs-5">arrow_forward</span>
         </button>
         
         @if (Route::has('register'))
-            <p class="text-center text-muted mb-0 fs-7">
-                Don't have an account? <a href="{{ route('register') }}" class="text-primary text-decoration-none fw-medium">Register now</a>
+            <p class="text-center text-white-50 mb-0 fs-7">
+                Don't have an account? <a href="{{ route('register') }}" class="text-decoration-none fw-medium" style="color: #38bdf8;">Register now</a>
             </p>
         @endif
     </form>

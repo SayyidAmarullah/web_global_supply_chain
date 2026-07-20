@@ -23,6 +23,14 @@ class ShipmentController extends Controller
         $user = Auth::user();
         $shipments = $user->role === 'admin' ? $this->repository->all() : $user->shipments()->latest()->get();
         
+        // Backfill empty shipments
+        foreach ($shipments as $shipment) {
+            if (empty($shipment->estimated_revenue) || $shipment->estimated_revenue == 0) {
+                $shipment->calculateFinancials();
+                $shipment->save();
+            }
+        }
+        
         $stats = [
             'total' => $shipments->count(),
             'active' => $shipments->whereIn('status', ['Pending', 'Preparing', 'Loading', 'Departed', 'In Transit', 'Delayed', 'Redirected'])->count(),
@@ -36,7 +44,31 @@ class ShipmentController extends Controller
 
     public function create()
     {
-        return view('shipments.create');
+        $intelligenceService = app(\App\Services\IntelligenceService::class);
+        
+        // Extract data for dropdowns
+        $commoditiesData = $intelligenceService->getCommodityIntelligence();
+        $commodities = collect($commoditiesData)->pluck('name')->unique()->sort()->values();
+        
+        $portsData = \App\Models\Port::all();
+        $ports = $portsData->pluck('name')->unique()->sort()->values();
+        $countries = $portsData->pluck('country')->unique()->sort()->values();
+        
+        // If there are no countries in Port model (empty DB), provide fallbacks
+        if ($countries->isEmpty()) {
+            $countries = collect(['United States', 'China', 'Germany', 'Japan', 'India', 'Brazil', 'South Africa', 'United Kingdom', 'Australia']);
+            $ports = collect(['Port of Los Angeles', 'Port of Shanghai', 'Port of Hamburg', 'Port of Yokohama', 'Port of Mumbai', 'Port of Santos', 'Port of Cape Town', 'Port of London', 'Port of Sydney']);
+        }
+        
+        $units = ['Metric Tons', 'TEU', 'Barrels', 'Gallons', 'Pounds', 'Ounces', 'Kilograms'];
+        $containerTypes = ['Dry Van 20ft', 'Dry Van 40ft', 'Reefer 20ft', 'Reefer 40ft', 'Flat Rack', 'Open Top', 'Tank', 'Bulk Carrier'];
+
+        // Prepare JSON mapping for JS
+        $portsMapping = $portsData->map(function($port) {
+            return ['name' => $port->name, 'country' => $port->country];
+        });
+
+        return view('shipments.create', compact('commodities', 'ports', 'countries', 'units', 'containerTypes', 'portsMapping'));
     }
 
     public function store(StoreShipmentRequest $request)
@@ -63,7 +95,11 @@ class ShipmentController extends Controller
         }
         
         $shipment->load(['redirects', 'activities']);
-        return view('shipments.show', compact('shipment'));
+        
+        $originPort = \App\Models\Port::where('name', $shipment->origin_port)->first();
+        $destPort = \App\Models\Port::where('name', $shipment->destination_port)->first();
+
+        return view('shipments.show', compact('shipment', 'originPort', 'destPort'));
     }
 
     public function edit(Shipment $shipment)
@@ -159,7 +195,20 @@ class ShipmentController extends Controller
             'status' => 'Pending'
         ]);
 
-        return view('shipments.redirect', compact('shipment', 'aiSuggestion'));
+        $portsData = \App\Models\Port::all();
+        $ports = $portsData->pluck('name')->unique()->sort()->values();
+        $countries = $portsData->pluck('country')->unique()->sort()->values();
+        
+        if ($countries->isEmpty()) {
+            $countries = collect(['United States', 'China', 'Germany', 'Japan', 'India', 'Brazil', 'South Africa', 'United Kingdom', 'Australia']);
+            $ports = collect(['Port of Los Angeles', 'Port of Shanghai', 'Port of Hamburg', 'Port of Yokohama', 'Port of Mumbai', 'Port of Santos', 'Port of Cape Town', 'Port of London', 'Port of Sydney']);
+        }
+
+        $portsMapping = $portsData->map(function($port) {
+            return ['name' => $port->name, 'country' => $port->country];
+        });
+
+        return view('shipments.redirect', compact('shipment', 'aiSuggestion', 'countries', 'ports', 'portsMapping'));
     }
 
     public function storeRedirect(RedirectShipmentRequest $request, Shipment $shipment)
@@ -207,5 +256,23 @@ class ShipmentController extends Controller
         ]);
 
         return redirect()->route('shipments.show', $shipment)->with('success', 'Shipment redirected successfully.');
+    }
+
+    public function startVoyage(Shipment $shipment)
+    {
+        if (Auth::user()->role !== 'admin' && $shipment->user_id !== Auth::id()) {
+            abort(403);
+        }
+        
+        $this->repository->update($shipment->id, [
+            'status' => 'In Transit'
+        ]);
+        
+        $shipment->activities()->create([
+            'status' => 'In Transit',
+            'description' => 'Vessel has departed and is currently in transit to destination.',
+        ]);
+        
+        return redirect()->route('shipments.show', $shipment)->with('success', 'Voyage started successfully. Shipment is now In Transit.');
     }
 }

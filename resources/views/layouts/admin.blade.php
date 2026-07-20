@@ -31,7 +31,7 @@
         <nav class="top-nav glass-panel admin-nav">
             <div class="d-flex align-items-center">
                 <span class="material-symbols-outlined text-danger me-2 fs-3">admin_panel_settings</span>
-                <span class="fs-5 fw-bold text-white tracking-tight">GLOBAL<span class="text-danger">ADMIN</span></span>
+                <span class="fs-5 fw-bold text-white tracking-tight notranslate" style="letter-spacing: 0.5px;">GLOBAL<span class="text-danger" style="font-weight: 300;">ADMIN</span></span>
             </div>
             
             <div class="d-flex align-items-center gap-4 ms-auto">
@@ -84,13 +84,19 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.master-data') }}" class="{{ request()->routeIs('admin.master-data') ? 'active' : '' }}">
+                        <a href="{{ route('admin.shipments.index') }}" class="{{ request()->routeIs('admin.shipments.*') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon">local_shipping</span>
+                            <span class="text">Data Pelayaran</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.ports.index') }}" class="{{ request()->routeIs('admin.ports.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">anchor</span>
                             <span class="text">Dataset Pelabuhan</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="">
+                        <a href="{{ route('admin.articles.index') }}" class="{{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon">article</span>
                             <span class="text">Artikel Analisis</span>
                         </a>
@@ -130,6 +136,17 @@
     </div>
 
     <script>
+        // Prevent Google Translate from translating material symbols icons (protect ligatures)
+        const iconObserver = new MutationObserver(() => {
+            document.querySelectorAll('.material-symbols-outlined').forEach(el => {
+                if (!el.classList.contains('notranslate')) {
+                    el.classList.add('notranslate');
+                }
+            });
+        });
+        iconObserver.observe(document.documentElement, { childList: true, subtree: true });
+        document.querySelectorAll('.material-symbols-outlined').forEach(el => el.classList.add('notranslate'));
+
         // Clock
         function updateClock() {
             const now = new Date();

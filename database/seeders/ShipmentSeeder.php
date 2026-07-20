@@ -44,6 +44,7 @@ class ShipmentSeeder extends Seeder
                 'status' => 'In Transit',
                 'estimated_arrival' => now()->addDays(rand(5, 30)),
                 'shipping_cost' => rand(5000, 20000),
+                'estimated_revenue' => rand(60000, 150000),
                 'estimated_profit' => rand(15000, 50000),
                 'current_speed' => rand(12, 24),
                 'current_heading' => rand(0, 360),

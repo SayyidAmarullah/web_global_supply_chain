@@ -57,6 +57,10 @@
                         <td>
                             @if($u->role === 'admin')
                                 <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25">Admin</span>
+                            @elseif($u->role === 'importer')
+                                <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-25">Importir</span>
+                            @elseif($u->role === 'exporter')
+                                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25">Eksportir</span>
                             @else
                                 <span class="badge bg-secondary text-white border border-secondary border-opacity-25">User</span>
                             @endif
@@ -72,9 +76,55 @@
                         </td>
                         <td class="text-muted fs-8">{{ $u->last_login_at ? $u->last_login_at->diffForHumans() : 'Never' }}</td>
                         <td>
-                            <button class="btn btn-sm btn-outline-secondary py-0 px-2" title="Edit"><span class="material-symbols-outlined fs-6">edit</span></button>
-                            <button class="btn btn-sm btn-outline-warning py-0 px-2" title="Reset Password"><span class="material-symbols-outlined fs-6">key</span></button>
-                            <button class="btn btn-sm btn-outline-danger py-0 px-2" title="Deactivate"><span class="material-symbols-outlined fs-6">block</span></button>
+                            <button class="btn btn-sm btn-outline-secondary py-0 px-2" title="Edit" data-bs-toggle="modal" data-bs-target="#editUserModal{{ $u->id }}">
+                                <span class="material-symbols-outlined fs-6">edit</span>
+                            </button>
+                            <form action="{{ route('admin.users.delete', $u->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete" {{ $u->id === auth()->id() ? 'disabled' : '' }}>
+                                    <span class="material-symbols-outlined fs-6">delete</span>
+                                </button>
+                            </form>
+
+                            <!-- Edit User Modal -->
+                            <div class="modal fade" id="editUserModal{{ $u->id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content bg-dark border-secondary">
+                                        <form action="{{ route('admin.users.update', $u->id) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="modal-header border-secondary border-opacity-25">
+                                                <h5 class="modal-title text-white">Edit User: {{ $u->name }}</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label text-muted">Role</label>
+                                                    <select name="role" class="form-select bg-dark border-secondary text-white">
+                                                        <option value="admin" {{ $u->role === 'admin' ? 'selected' : '' }}>Administrator</option>
+                                                        <option value="importer" {{ $u->role === 'importer' ? 'selected' : '' }}>Importer</option>
+                                                        <option value="exporter" {{ $u->role === 'exporter' ? 'selected' : '' }}>Exporter</option>
+                                                        <option value="user" {{ $u->role === 'user' ? 'selected' : '' }}>Standard User</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label text-muted">Account Status</label>
+                                                    <select name="account_status" class="form-select bg-dark border-secondary text-white">
+                                                        <option value="active" {{ $u->account_status === 'active' ? 'selected' : '' }}>Active</option>
+                                                        <option value="inactive" {{ $u->account_status === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                                        <option value="suspended" {{ $u->account_status === 'suspended' ? 'selected' : '' }}>Suspended</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-secondary border-opacity-25">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     @endforeach

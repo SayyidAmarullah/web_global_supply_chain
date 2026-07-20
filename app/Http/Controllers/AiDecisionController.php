@@ -104,7 +104,12 @@ class AiDecisionController extends Controller
                 'insurance_cost' => 'required|numeric',
                 'import_tax' => 'required|numeric',
                 'export_tax' => 'required|numeric',
-                'exchange_rate' => 'required|numeric'
+                'exchange_rate' => 'required|numeric',
+                'weather_risk' => 'nullable|numeric',
+                'inflation_risk' => 'nullable|numeric',
+                'political_risk' => 'nullable|numeric',
+                'currency_risk' => 'nullable|numeric',
+                'total_risk' => 'nullable|numeric'
             ]);
 
             $totalCost = $data['purchase_cost'] + $data['shipping_cost'] + $data['insurance_cost'] + $data['import_tax'] + $data['export_tax'];
@@ -116,6 +121,11 @@ class AiDecisionController extends Controller
             $data['expected_revenue'] = $revenue;
             $data['expected_profit'] = $profit;
             $data['margin_percentage'] = $margin;
+            $data['weather_risk'] = $data['weather_risk'] ?? 0;
+            $data['inflation_risk'] = $data['inflation_risk'] ?? 0;
+            $data['political_risk'] = $data['political_risk'] ?? 0;
+            $data['currency_risk'] = $data['currency_risk'] ?? 0;
+            $data['total_risk'] = $data['total_risk'] ?? 0;
 
             ProfitSimulation::create($data);
 

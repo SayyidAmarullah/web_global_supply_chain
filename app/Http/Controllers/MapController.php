@@ -26,11 +26,8 @@ class MapController extends Controller
         $user = Auth::user();
 
         // 1. Shipments
-        if ($user->role === 'admin') {
-            $shipments = Shipment::whereIn('status', ['Pending', 'Departed', 'In Transit', 'Delayed', 'Redirected'])->get();
-        } else {
-            $shipments = $user->shipments()->whereIn('status', ['Pending', 'Departed', 'In Transit', 'Delayed', 'Redirected'])->get();
-        }
+        // The Global Map always shows all active global shipments
+        $shipments = Shipment::whereIn('status', ['Pending', 'Departed', 'In Transit', 'Delayed', 'Redirected'])->get();
 
         $liveShipments = [];
 
@@ -69,10 +66,13 @@ class MapController extends Controller
                 $originPortName = strtolower(str_replace('Port of ', '', $ship->origin_port));
                 $destPortName = strtolower(str_replace('Port of ', '', $ship->destination_port));
                 $routeKey = $originPortName . '-' . $destPortName;
+                $reversedRouteKey = $destPortName . '-' . $originPortName;
                 
                 // If we have a predefined route for the current destination, use it
                 if (isset($seaRoutes[$routeKey])) {
                     $points = $seaRoutes[$routeKey];
+                } elseif (isset($seaRoutes[$reversedRouteKey])) {
+                    $points = array_reverse($seaRoutes[$reversedRouteKey]);
                 } else {
                     // Fallback: draw straight line from origin to new destination
                     $originCoord = [0, 0];
@@ -85,6 +85,10 @@ class MapController extends Controller
                         if (str_contains($destPortName, $p)) $destCoord = $c;
                     }
                     
+                    if ($originCoord === [0, 0]) {
+                        $hash = crc32($originPortName);
+                        $originCoord = [($hash % 60) - 30, ($hash % 180) - 90];
+                    }
                     if ($destCoord === [0, 0]) {
                         $hash = crc32($destPortName);
                         $destCoord = [($hash % 60) - 30, ($hash % 180) - 90];
@@ -92,12 +96,28 @@ class MapController extends Controller
                     $points = [$originCoord, $destCoord];
                 }
 
-                $progress = mt_rand(10, 50) / 100;
+                // Calculate deterministic progress based on created_at and ETA
+                $startTimestamp = $ship->created_at ? $ship->created_at->timestamp : time() - 86400;
+                $endTimestamp = $ship->estimated_arrival ? \Carbon\Carbon::parse($ship->estimated_arrival)->timestamp : $startTimestamp + (14 * 86400);
+                
+                $now = time();
+                if ($now <= $startTimestamp) {
+                    $progress = 0.02; // Just departed
+                } elseif ($now >= $endTimestamp) {
+                    $progress = 0.98; // Arriving
+                } else {
+                    $progress = ($now - $startTimestamp) / max(1, ($endTimestamp - $startTimestamp));
+                }
+                
+                // Add a tiny random jitter so multiple ships on the exact same route don't perfectly stack
+                $progress += (crc32($ship->id) % 100) / 10000;
+                $progress = max(0.01, min(0.99, $progress));
 
                 return [
                     'id' => $ship->id,
                     'shipment_number' => $ship->shipment_number,
-                    'vessel_name' => $ship->vessel_name ?? 'Vessel-' . mt_rand(100, 999),
+                    'vessel_name' => $ship->vessel_name ?? 'Vessel-' . (crc32($ship->id) % 899 + 100), // Deterministic name
+
                     'company' => 'Global Freight Corp',
                     'commodity' => $ship->commodity,
                     'quantity' => $ship->quantity . ' ' . $ship->weight_unit,
@@ -117,7 +137,7 @@ class MapController extends Controller
                     'eta' => $ship->estimated_arrival ? $ship->estimated_arrival->format('M d, Y') : 'Unknown',
                     'redirect_url' => route('shipments.redirect', $ship->id)
                 ];
-            })->toArray();
+            })->values()->toArray();
         }
 
         // 2. Ports
@@ -157,12 +177,21 @@ class MapController extends Controller
         // 5. AI Decision Panel Data
         $aiDecisions = $this->intelligenceService->getAIRecommendations();
 
+        // 6. Weather Alerts
+        $weatherAlerts = [
+            ['id' => 1, 'type' => 'Hurricane', 'severity' => 'Critical', 'lat' => 25.0, 'lng' => -90.0, 'radius' => 500, 'description' => 'Hurricane Category 4 approaching Gulf of Mexico. Extreme danger for shipping.'],
+            ['id' => 2, 'type' => 'Typhoon', 'severity' => 'High', 'lat' => 22.0, 'lng' => 125.0, 'radius' => 400, 'description' => 'Typhoon forming in East China Sea. Port operations may be suspended.'],
+            ['id' => 3, 'type' => 'Storm', 'severity' => 'Medium', 'lat' => 50.0, 'lng' => -20.0, 'radius' => 300, 'description' => 'Severe Atlantic storm affecting European shipping lanes.'],
+            ['id' => 4, 'type' => 'Cyclone', 'severity' => 'High', 'lat' => 15.0, 'lng' => 65.0, 'radius' => 350, 'description' => 'Tropical Cyclone forming in Arabian Sea. High wave warnings.']
+        ];
+
         return response()->json([
             'shipments' => $liveShipments,
             'ports' => $ports,
             'stats' => $stats,
             'countryRisks' => $countryRisks,
-            'aiDecisions' => $aiDecisions
+            'aiDecisions' => $aiDecisions,
+            'weatherAlerts' => $weatherAlerts
         ]);
     }
 }

@@ -5,24 +5,9 @@
     <base target="_self">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlobalChain - Supply Chain Risk Intelligence</title>
+    <title>Global Supply Chain Risk Intelligence & Trade Decision Support Platform</title>
     <meta name="description" content="Navigate global trade with intelligence. Monitor shipments, analyze markets, predict opportunities, and optimize trade decisions with AI-powered recommendations.">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#06B6D4',
-                        accent: '#8B5CF6',
-                        highlight: '#10B981',
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -161,24 +146,18 @@
 <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background:transparent; backdrop-filter:blur(0px); border-bottom:1px solid transparent;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
         <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined me-2 text-3xl" style="color: #38bdf8;">hub</span>
-            <span class="text-xl font-bold tracking-tight text-white notranslate" style="letter-spacing: 0.5px;">GLOBAL<span style="color: #38bdf8; font-weight: 300;">CHAIN</span></span>
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                <i class="fas fa-globe text-white text-sm"></i>
+            </div>
+            <span class="text-lg font-bold tracking-tight">TradeIntel</span>
         </div>
         <!-- Desktop nav -->
         <nav class="hidden md:flex items-center gap-6 text-sm">
             <ul id="nav-list" class="flex items-center gap-6 list-none"></ul>
         </nav>
         <div class="hidden md:flex items-center gap-3">
-            @if (Route::has('login'))
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="text-sm bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-5 py-2 rounded-full font-medium transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)]">Go to Dashboard</a>
-                @else
-                    <a href="{{ route('login') }}" class="text-sm text-white/70 hover:text-white transition-colors px-3 py-2">Login</a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="text-sm bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-5 py-2 rounded-full font-medium transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)]">Register</a>
-                    @endif
-                @endauth
-            @endif
+            <button class="text-sm text-white/70 hover:text-white transition-colors">Login</button>
+            <button class="text-sm bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-5 py-2 rounded-full font-medium transition-all">Register</button>
         </div>
         <!-- Mobile hamburger -->
         <button id="mobile-menu-btn" class="md:hidden text-white/70 hover:text-white text-xl"><i class="fas fa-bars"></i></button>
@@ -187,16 +166,8 @@
     <div id="mobile-menu" class="hidden md:hidden glass-curved mx-4 mb-2 p-4">
         <ul id="mobile-nav-list" class="flex flex-col gap-3 list-none"></ul>
         <div class="flex gap-3 mt-4 pt-4 border-t border-white/10">
-            @if (Route::has('login'))
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="flex-1 text-center text-sm bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-full font-medium">Dashboard</a>
-                @else
-                    <a href="{{ route('login') }}" class="flex-1 text-center text-sm text-white/70 hover:text-white transition-colors py-2">Login</a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="flex-1 text-center text-sm bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-full font-medium">Register</a>
-                    @endif
-                @endauth
-            @endif
+            <button class="flex-1 text-sm text-white/70 hover:text-white transition-colors">Login</button>
+            <button class="flex-1 text-sm bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-full font-medium">Register</button>
         </div>
     </div>
 </header>
@@ -302,24 +273,7 @@
     <!-- ========== LIVE GLOBAL STATS ========== -->
     <section class="relative z-10 py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-6">
-    <div class="bg-white/5 backdrop-blur-lg p-6 text-center rounded-2xl border border-white/10 hover:border-primary/30 transition-colors">
-        <h3 class="text-3xl font-bold text-primary mb-2">240+</h3>
-        <p class="text-white/60 text-sm">Negara Terpantau</p>
-    </div>
-    <div class="bg-white/5 backdrop-blur-lg p-6 text-center rounded-2xl border border-white/10 hover:border-secondary/30 transition-colors">
-        <h3 class="text-3xl font-bold text-secondary mb-2">15M+</h3>
-        <p class="text-white/60 text-sm">Kargo Aktif</p>
-    </div>
-    <div class="bg-white/5 backdrop-blur-lg p-6 text-center rounded-2xl border border-white/10 hover:border-accent/30 transition-colors">
-        <h3 class="text-3xl font-bold text-accent mb-2">99.9%</h3>
-        <p class="text-white/60 text-sm">System Uptime</p>
-    </div>
-    <div class="bg-white/5 backdrop-blur-lg p-6 text-center rounded-2xl border border-white/10 hover:border-highlight/30 transition-colors">
-        <h3 class="text-3xl font-bold text-highlight mb-2">Real-time</h3>
-        <p class="text-white/60 text-sm">Sinkronisasi Data</p>
-    </div>
-</div>
+            <div id="stats-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4"></div>
         </div>
     </section>
 
@@ -331,32 +285,7 @@
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold">Enterprise-Grade Trade Intelligence</h2>
                 <p class="text-white/50 mt-4 max-w-2xl mx-auto">Every tool designed to give you complete visibility and control over your global supply chain.</p>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- Feature 1 -->
-    <div class="bg-white/5 backdrop-blur-lg p-8 rounded-3xl border border-white/10 hover:border-primary/50 transition-all duration-300 group hover:-translate-y-2">
-        <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-primary">monitoring</span>
-        </div>
-        <h3 class="text-xl font-semibold text-white mb-3">Live Tracking Terintegrasi</h3>
-        <p class="text-white/60 leading-relaxed text-sm">Pantau setiap pergerakan armada, kapal, dan kargo secara real-time di seluruh pelabuhan dunia. Dapatkan notifikasi instan untuk perubahan rute atau anomali logistik.</p>
-    </div>
-    <!-- Feature 2 -->
-    <div class="bg-white/5 backdrop-blur-lg p-8 rounded-3xl border border-white/10 hover:border-secondary/50 transition-all duration-300 group hover:-translate-y-2">
-        <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-secondary">psychology</span>
-        </div>
-        <h3 class="text-xl font-semibold text-white mb-3">Rekomendasi AI</h3>
-        <p class="text-white/60 leading-relaxed text-sm">Algoritma cerdas yang secara otonom menganalisis cuaca (Open-Meteo), risiko geopolitik, dan sentimen berita global untuk memberikan opsi rute paling efisien.</p>
-    </div>
-    <!-- Feature 3 -->
-    <div class="bg-white/5 backdrop-blur-lg p-8 rounded-3xl border border-white/10 hover:border-accent/50 transition-all duration-300 group hover:-translate-y-2">
-        <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-accent">language</span>
-        </div>
-        <h3 class="text-xl font-semibold text-white mb-3">Intelijen Makroekonomi</h3>
-        <p class="text-white/60 leading-relaxed text-sm">Dapatkan wawasan mendalam mengenai indikator ekonomi dari World Bank dan tren nilai tukar mata uang untuk keputusan impor/ekspor yang lebih menguntungkan.</p>
-    </div>
-</div>
+            <div id="features-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </div>
     </section>
 
@@ -389,74 +318,4 @@
                     <circle cx="140" cy="140" r="6" fill="var(--primary)" class="pulse-dot"/>
                     <circle cx="320" cy="150" r="7" fill="var(--accent)" class="pulse-dot" style="animation-delay:0.3s"/>
                     <circle cx="450" cy="95" r="5" fill="var(--secondary)" class="pulse-dot" style="animation-delay:0.7s"/>
-                    <circle cx="585" cy="130" r="5" fill="var(--highlight)" class="pulse-dot" style="animation-delay:1.2s"/>
-                </svg>
-            </div>
-        </div>
-    </section>
-    <!-- ========== CALL TO ACTION ========== -->
-    <section class="relative z-10 py-24">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="bg-white/5 backdrop-blur-2xl rounded-3xl p-10 sm:p-16 border border-white/10 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
-                <div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 opacity-50"></div>
-                <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl"></div>
-                <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-accent/20 rounded-full blur-3xl"></div>
-                
-                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-white relative z-10">Siap Menguasai Ekosistem Rantai Pasokan?</h2>
-                <p class="text-white/70 mb-10 text-lg relative z-10 max-w-2xl mx-auto">Bergabunglah dengan korporasi global yang telah mempercayakan mitigasi risiko dan intelijen logistik mereka pada GlobalChain.</p>
-                
-                <div class="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
-                    <a href="/register" class="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full font-medium hover:scale-105 transition-transform shadow-[0_0_20px_rgba(59,130,246,0.4)]">Mulai Sekarang — Gratis</a>
-                    <a href="/login" class="bg-white/10 backdrop-blur-md text-white px-8 py-3 rounded-full font-medium border border-white/20 hover:bg-white/20 transition-colors">Masuk ke Dasbor</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== FOOTER ========== -->
-    <footer class="relative z-10 border-t border-white/10 bg-[#050816]/90 backdrop-blur-xl pt-16 pb-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-                <div class="col-span-1 md:col-span-2">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="material-symbols-outlined text-3xl" style="color: #38bdf8;">hub</span>
-                        <span class="text-xl font-bold tracking-tight text-white notranslate">GLOBAL<span style="color: #38bdf8; font-weight: 300;">CHAIN</span></span>
-                    </div>
-                    <p class="text-white/50 max-w-sm mb-6">Platform intelijen risiko rantai pasokan global terkemuka. Memberikan visibilitas dan presisi tak tertandingi untuk ekosistem logistik Anda.</p>
-                    <div class="flex gap-4">
-                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors"><i class="fab fa-github"></i></a>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-6">Solusi Intelijen</h4>
-                    <ul class="space-y-3 text-sm text-white/50">
-                        <li><a href="#" class="hover:text-primary transition-colors">Global Tracking</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Port Intelligence</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Predictive Analytics (AI)</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Macroeconomic Monitoring</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-6">Korporat</h4>
-                    <ul class="space-y-3 text-sm text-white/50">
-                        <li><a href="#" class="hover:text-primary transition-colors">Tentang GlobalChain</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Pusat Bantuan</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Hubungi Sales</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Kebijakan Privasi</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40">
-                <p>&copy; 2026 GlobalChain Intelligence Systems. All rights reserved.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
-                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
-                    <a href="#" class="hover:text-white transition-colors">Cookie Policy</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
+                    <circle cx="585" cy="130" r="5" fill="var(--highlight)" class=

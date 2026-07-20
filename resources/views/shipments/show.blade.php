@@ -24,6 +24,12 @@
             <a href="{{ route('shipments.index') }}" class="text-decoration-none">
                 <x-button variant="outline" icon="arrow_back">Back</x-button>
             </a>
+            @if($shipment->status === 'Pending')
+                <form action="{{ route('shipments.start', $shipment) }}" method="POST" class="d-inline">
+                    @csrf
+                    <x-button type="submit" variant="success" icon="sailing" style="background-color: var(--success); color: white;">Start Voyage</x-button>
+                </form>
+            @endif
             @if(in_array($shipment->status, ['Pending', 'Preparing', 'Loading', 'Departed', 'In Transit', 'Delayed']))
                 <a href="{{ route('shipments.redirect', $shipment) }}" class="text-decoration-none">
                     <x-button variant="primary" icon="alt_route" class="bg-purple-neon border-purple hover-neon-text" style="background-color: var(--purple-neon); color: white;">Smart Redirect</x-button>
@@ -181,6 +187,8 @@
 <!-- Leaflet CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- SeaRoute JS -->
+<script src="https://cdn.jsdelivr.net/npm/searoute-js@0.1.0/searoute.min.js"></script>
 
 <style>
     .animated-route { stroke-dasharray: 8, 8; animation: dash 20s linear infinite; }
@@ -203,7 +211,7 @@
             { subdomains: 'abcd', maxZoom: 19 }
         ).addTo(map);
 
-        // Predefined Highly Detailed Realistic Routes
+        // === PREDEFINED HIGHLY DETAILED REALISTIC ROUTES ===
         const seaRoutes = {
             'shanghai-rotterdam': [[31.228, 121.475], [24.5, 119.5], [15.0, 112.0], [1.2, 104.0], [5.0, 98.0], [5.8, 80.0], [12.0, 60.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 15.0], [37.5, 5.0], [36.0, -5.0], [38.0, -10.0], [45.0, -8.0], [49.0, -4.0], [50.5, 0.0], [51.949, 4.148]],
             'shanghai-hamburg': [[31.228, 121.475], [24.5, 119.5], [15.0, 112.0], [1.2, 104.0], [5.0, 98.0], [5.8, 80.0], [12.0, 60.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 15.0], [37.5, 5.0], [36.0, -5.0], [38.0, -10.0], [45.0, -8.0], [49.0, -4.0], [52.0, 3.0], [53.548, 9.987]],
@@ -212,11 +220,17 @@
             'shanghai-savannah': [[31.228, 121.475], [30.0, 130.0], [20.0, 160.0], [15.0, -160.0], [7.5, -81.0], [8.9, -79.5], [9.3, -79.9], [15.0, -75.0], [25.0, -79.0], [28.0, -80.0], [32.08, -81.09]],
             'los angeles-yokohama': [[33.728, -118.262], [34.0, -130.0], [35.0, -150.0], [36.0, -170.0], [36.0, 170.0], [35.0, 150.0], [35.443, 139.638]],
             'santos-shanghai': [[-23.953, -46.335], [-30.0, -30.0], [-35.0, -10.0], [-35.5, 19.5], [-30.0, 40.0], [-20.0, 60.0], [-10.0, 80.0], [-6.0, 105.0], [-4.0, 108.0], [-2.0, 108.5], [5.0, 109.0], [15.0, 115.0], [24.0, 119.0], [31.228, 121.475]],
+            'santos-yokohama': [[-23.953, -46.335], [-30.0, -30.0], [-35.0, -10.0], [-35.5, 19.5], [-30.0, 40.0], [-20.0, 60.0], [-10.0, 80.0], [-6.0, 105.0], [-4.0, 108.0], [-2.0, 108.5], [5.0, 109.0], [15.0, 115.0], [24.0, 119.0], [31.228, 121.475], [31.0, 125.0], [30.5, 130.0], [32.0, 134.0], [34.0, 138.5], [35.443, 139.638]],
             'jebel ali-hamburg': [[24.985, 55.027], [26.5, 56.5], [24.0, 59.0], [15.0, 55.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 15.0], [37.5, 5.0], [36.0, -5.0], [38.0, -10.0], [45.0, -8.0], [49.0, -4.0], [52.0, 3.0], [53.548, 9.987]],
-            'new york-cape town': [[40.678, -73.998], [35.0, -65.0], [20.0, -45.0], [0.0, -25.0], [-15.0, -10.0], [-25.0, 0.0], [-33.924, 18.424]]
+            'new york-cape town': [[40.678, -73.998], [35.0, -65.0], [20.0, -45.0], [0.0, -25.0], [-15.0, -10.0], [-25.0, 0.0], [-33.924, 18.424]],
+            'jebel ali-yokohama': [[24.985, 55.027], [26.5, 56.5], [20.0, 60.0], [5.8, 80.0], [5.0, 98.0], [1.2, 104.0], [10.0, 110.0], [22.0, 120.0], [30.0, 130.0], [34.0, 138.5], [35.1, 139.7], [35.443, 139.638]],
+            'jebel ali-shanghai': [[24.985, 55.027], [26.5, 56.5], [20.0, 60.0], [5.8, 80.0], [5.0, 98.0], [1.2, 104.0], [15.0, 112.0], [24.5, 119.5], [31.228, 121.475]],
+            'sydney-dubrovnik': [[-33.868, 151.209], [-40.0, 140.0], [-38.0, 120.0], [-25.0, 100.0], [-10.0, 80.0], [5.0, 65.0], [12.0, 45.0], [14.0, 42.5], [20.0, 39.0], [27.0, 34.5], [30.0, 32.5], [31.5, 32.2], [34.0, 25.0], [36.0, 20.0], [40.0, 18.0], [42.65, 18.09]]
         };
 
-        const portCoords = {
+        // === ADVANCED GRAPH-BASED SEA ROUTING (Fallback) ===
+        // Define key maritime nodes (ports + ocean waypoints) to route around land
+        const oceanNodes = {
             'shanghai': [31.228, 121.475],
             'rotterdam': [51.949, 4.148],
             'los angeles': [33.728, -118.262],
@@ -226,42 +240,199 @@
             'hamburg': [53.548, 9.987],
             'new york': [40.678, -73.998],
             'cape town': [-33.924, 18.424],
-            'savannah': [32.08, -81.09]
+            'savannah': [32.08, -81.09],
+            'sydney': [-33.868, 151.209],
+            'dubrovnik': [42.65, 18.09],
+            'mumbai': [18.944, 72.836],
+            'london': [51.507, 0.127],
+            
+            // Coast-hugging Waypoints
+            'wp_malacca': [5.0, 98.0],
+            'wp_singapore': [1.2, 104.0],
+            'wp_south_china_sea': [15.0, 115.0],
+            'wp_taiwan_strait': [24.0, 119.0],
+            'wp_sri_lanka': [5.0, 80.0],
+            'wp_gulf_of_aden': [12.0, 45.0],
+            'wp_red_sea': [20.0, 39.0],
+            'wp_suez': [27.5, 34.0],
+            'wp_mediterranean': [35.0, 15.0],
+            'wp_gibraltar': [35.9, -5.5],
+            'wp_portugal_coast': [38.0, -10.0],
+            'wp_biscay': [45.0, -8.0],
+            'wp_english_channel': [50.0, -3.0],
+            'wp_us_east': [35.0, -74.0],
+            'wp_caribbean': [20.0, -74.0],
+            'wp_panama': [9.0, -79.5],
+            'wp_mexico_coast': [15.0, -100.0],
+            'wp_brazil_coast': [-10.0, -32.0],
+            'wp_argentina_coast': [-40.0, -55.0],
+            'wp_cape_horn': [-56.0, -67.0],
+            'wp_cape_good_hope': [-36.0, 18.0],
+            'wp_south_madagascar': [-35.0, 45.0],
+            'wp_east_africa': [-10.0, 45.0],
+            'wp_indian_ocean': [-10.0, 75.0],
+            'wp_sunda': [-6.0, 105.0],
+            'wp_arafura': [-10.0, 135.0],
+            'wp_coral_sea': [-15.0, 155.0],
+            'wp_atlantic_mid': [0.0, -30.0],
+            'wp_atlantic_south': [-30.0, -15.0],
+            'wp_pacific_mid': [0.0, -150.0],
+            'wp_arabian': [15.0, 60.0]
         };
+
+        const oceanEdges = {
+            'shanghai': ['wp_taiwan_strait', 'yokohama'],
+            'yokohama': ['shanghai', 'wp_pacific_mid', 'wp_taiwan_strait'],
+            'wp_taiwan_strait': ['shanghai', 'yokohama', 'wp_south_china_sea'],
+            'wp_south_china_sea': ['wp_taiwan_strait', 'wp_singapore'],
+            'wp_singapore': ['wp_south_china_sea', 'wp_malacca', 'wp_sunda'],
+            'wp_sunda': ['wp_singapore', 'wp_indian_ocean', 'wp_arafura'],
+            'wp_arafura': ['wp_sunda', 'wp_coral_sea'],
+            'wp_coral_sea': ['wp_arafura', 'sydney', 'wp_pacific_mid'],
+            'sydney': ['wp_coral_sea', 'wp_pacific_mid'],
+            'wp_malacca': ['wp_singapore', 'wp_sri_lanka'],
+            'wp_sri_lanka': ['wp_malacca', 'mumbai', 'wp_indian_ocean', 'wp_gulf_of_aden'],
+            'mumbai': ['wp_sri_lanka', 'wp_arabian'],
+            'wp_arabian': ['mumbai', 'jebel ali', 'wp_gulf_of_aden'],
+            'jebel ali': ['wp_arabian'],
+            'wp_gulf_of_aden': ['wp_arabian', 'wp_sri_lanka', 'wp_red_sea', 'wp_east_africa'],
+            'wp_indian_ocean': ['wp_sri_lanka', 'wp_sunda', 'wp_south_madagascar', 'wp_east_africa'],
+            'wp_east_africa': ['wp_indian_ocean', 'wp_gulf_of_aden', 'wp_south_madagascar'],
+            'wp_south_madagascar': ['wp_east_africa', 'wp_indian_ocean', 'wp_cape_good_hope'],
+            'wp_red_sea': ['wp_gulf_of_aden', 'wp_suez'],
+            'wp_suez': ['wp_red_sea', 'wp_mediterranean'],
+            'wp_mediterranean': ['wp_suez', 'dubrovnik', 'wp_gibraltar'],
+            'dubrovnik': ['wp_mediterranean'],
+            'wp_gibraltar': ['wp_mediterranean', 'wp_portugal_coast', 'wp_atlantic_mid'],
+            'wp_portugal_coast': ['wp_gibraltar', 'wp_biscay'],
+            'wp_biscay': ['wp_portugal_coast', 'wp_english_channel'],
+            'wp_english_channel': ['wp_biscay', 'london', 'rotterdam'],
+            'london': ['wp_english_channel', 'rotterdam', 'hamburg'],
+            'rotterdam': ['wp_english_channel', 'london', 'hamburg'],
+            'hamburg': ['rotterdam', 'london'],
+            'new york': ['wp_us_east', 'wp_atlantic_mid'],
+            'wp_us_east': ['new york', 'savannah'],
+            'savannah': ['wp_us_east', 'wp_caribbean'],
+            'wp_caribbean': ['savannah', 'wp_panama', 'wp_atlantic_mid'],
+            'wp_atlantic_mid': ['wp_gibraltar', 'new york', 'wp_caribbean', 'wp_atlantic_south', 'wp_brazil_coast'],
+            'wp_brazil_coast': ['wp_atlantic_mid', 'santos'],
+            'wp_atlantic_south': ['wp_atlantic_mid', 'santos', 'wp_cape_good_hope', 'cape town'],
+            'santos': ['wp_brazil_coast', 'wp_atlantic_south', 'wp_argentina_coast'],
+            'wp_argentina_coast': ['santos', 'wp_cape_horn'],
+            'cape town': ['wp_atlantic_south', 'wp_cape_good_hope'],
+            'wp_cape_good_hope': ['cape town', 'wp_atlantic_south', 'wp_south_madagascar'],
+            'wp_cape_horn': ['wp_argentina_coast', 'wp_pacific_mid'],
+            'wp_panama': ['wp_caribbean', 'wp_mexico_coast'],
+            'wp_mexico_coast': ['wp_panama', 'los angeles'],
+            'los angeles': ['wp_mexico_coast', 'wp_pacific_mid', 'yokohama'],
+            'wp_pacific_mid': ['los angeles', 'yokohama', 'wp_coral_sea', 'sydney', 'wp_cape_horn']
+        };
+
+        // Use Haversine formula for actual earth surface distance to prevent high-latitude distortion
+        function getDist(p1, p2) {
+            const R = 6371;
+            const dLat = (p2[0] - p1[0]) * Math.PI / 180;
+            let dLng = (p2[1] - p1[1]);
+            if (Math.abs(dLng) > 180) dLng = (360 - Math.abs(dLng)) * Math.sign(-dLng);
+            dLng = dLng * Math.PI / 180;
+            const lat1 = p1[0] * Math.PI / 180;
+            const lat2 = p2[0] * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(lat1) * Math.cos(lat2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function findClosestNode(targetCoord) {
+            let minD = Infinity;
+            let closest = null;
+            for (let [name, coord] of Object.entries(oceanNodes)) {
+                let d = getDist(targetCoord, coord);
+                if (d < minD) {
+                    minD = d;
+                    closest = name;
+                }
+            }
+            return closest;
+        }
+
+        function findGraphRoute(startNode, endNode) {
+            let nodes = new Set(Object.keys(oceanNodes));
+            let distances = {}, prev = {};
+            for (let n of nodes) { distances[n] = Infinity; prev[n] = null; }
+            distances[startNode] = 0;
+
+            while (nodes.size > 0) {
+                let curr = null, minD = Infinity;
+                for (let n of nodes) {
+                    if (distances[n] < minD) { minD = distances[n]; curr = n; }
+                }
+                if (curr === null || curr === endNode) break;
+                nodes.delete(curr);
+
+                for (let neighbor of (oceanEdges[curr] || [])) {
+                    if (nodes.has(neighbor)) {
+                        let d = distances[curr] + getDist(oceanNodes[curr], oceanNodes[neighbor]);
+                        if (d < distances[neighbor]) { distances[neighbor] = d; prev[neighbor] = curr; }
+                    }
+                }
+            }
+            let path = [], curr = endNode;
+            while (curr) { path.unshift(oceanNodes[curr]); curr = prev[curr]; }
+            return path;
+        }
 
         // Determine origin and current destination
         const isRedirected = '{{ $shipment->status }}' === 'Redirected';
         const color = isRedirected ? 'var(--purple-neon)' : 'var(--cyan-glow)';
         
+        // Ensure coordinates are mapped properly
+        let originCoord = [{{ $originPort ? $originPort->latitude : 0 }}, {{ $originPort ? $originPort->longitude : 0 }}];
+        let destCoord = [{{ $destPort ? $destPort->latitude : 0 }}, {{ $destPort ? $destPort->longitude : 0 }}];
+        
         let originalOrigin = '{{ strtolower(str_replace("Port of ", "", $shipment->origin_port)) }}';
         let destPort = '{{ strtolower(str_replace("Port of ", "", $shipment->destination_port)) }}';
         
         const routeKey = originalOrigin + '-' + destPort;
+        const reversedRouteKey = destPort + '-' + originalOrigin;
+
         let routePoints = [];
 
+        // Check if we have a highly detailed predefined sea route
         if (seaRoutes[routeKey]) {
             routePoints = [...seaRoutes[routeKey]];
+        } else if (seaRoutes[reversedRouteKey]) {
+            routePoints = [...seaRoutes[reversedRouteKey]].reverse();
         } else {
-            // Draw straight line fallback
-            let originCoord = [0, 0];
-            let destCoord = [0, 0];
-            
-            for (const [portName, coords] of Object.entries(portCoords)) {
-                if (originalOrigin.includes(portName)) originCoord = coords;
-                if (destPort.includes(portName)) destCoord = coords;
+            // Fallback to Graph Routing
+            if (originCoord[0] === 0 && originCoord[1] === 0) {
+                originCoord = oceanNodes[originalOrigin] || oceanNodes['yokohama'];
+            }
+            if (destCoord[0] === 0 && destCoord[1] === 0) {
+                destCoord = oceanNodes[destPort] || oceanNodes['shanghai'];
             }
 
-            if (destCoord[0] === 0 && destCoord[1] === 0) {
-                let hash = 0;
-                for (let i = 0; i < destPort.length; i++) {
-                    hash = ((hash << 5) - hash) + destPort.charCodeAt(i);
-                    hash |= 0; 
+            let startNode = oceanNodes[originalOrigin] ? originalOrigin : findClosestNode(originCoord);
+            let endNode = oceanNodes[destPort] ? destPort : findClosestNode(destCoord);
+            
+            routePoints.push(originCoord);
+            
+            if (startNode !== endNode) {
+                let graphPath = findGraphRoute(startNode, endNode);
+                for (let pt of graphPath) {
+                    let lastPt = routePoints[routePoints.length - 1];
+                    let fixedLng = pt[1];
+                    if (lastPt[1] - fixedLng > 180) fixedLng += 360;
+                    else if (fixedLng - lastPt[1] > 180) fixedLng -= 360;
+                    routePoints.push([pt[0], fixedLng]);
                 }
-                hash = Math.abs(hash);
-                destCoord = [(hash % 60) - 30, (hash % 180) - 90];
             }
             
-            routePoints = [originCoord, destCoord];
+            let lastPt = routePoints[routePoints.length - 1];
+            let finalLng = destCoord[1];
+            if (lastPt[1] - finalLng > 180) finalLng += 360;
+            else if (finalLng - lastPt[1] > 180) finalLng -= 360;
+            routePoints.push([destCoord[0], finalLng]);
         }
 
         // Draw Route
@@ -287,7 +458,7 @@
 
         // Initialize marker
         let progress = 0.1; // start at 10%
-        let shipSpeed = 0.00005; // EVEN SLOWER movement
+        let shipSpeed = 0.000005; // Slowed down significantly (10x slower)
         const shipMarker = L.marker(routePoints[0], { icon: shipIcon }).addTo(map);
         
         // Add Port Origin & Dest Markers

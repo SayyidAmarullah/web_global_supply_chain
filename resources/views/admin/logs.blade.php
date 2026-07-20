@@ -11,9 +11,12 @@
             </h1>
             <p class="text-muted fs-7 mt-1 ms-5">Traceable history of all system events and user actions</p>
         </div>
-        <button class="btn btn-outline-danger d-flex align-items-center gap-2 px-3 py-2">
-            <span class="material-symbols-outlined fs-5">delete_sweep</span> Clear Old Logs
-        </button>
+        <form action="{{ route('admin.logs.clear') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear all logs? This cannot be undone.');">
+            @csrf
+            <button type="submit" class="btn btn-outline-danger d-flex align-items-center gap-2 px-3 py-2">
+                <span class="material-symbols-outlined fs-5">delete_sweep</span> Clear All Logs
+            </button>
+        </form>
     </div>
 
     <!-- Search & Filter -->

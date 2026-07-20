@@ -184,9 +184,9 @@
                         <div class="row g-3 flex-grow-1">
                             <div class="col-sm-4">
                                 <div class="bg-white bg-opacity-5 rounded-3 border border-secondary border-opacity-25 h-100 d-flex flex-column justify-content-center align-items-center transition-all hover-glow p-3">
-                                    <span class="material-symbols-outlined text-primary mb-2" style="font-size: 3rem;">explore</span>
-                                    <p class="text-muted fs-8 text-uppercase mb-1">Wind Direction</p>
-                                    <h4 id="windDirVal" class="text-white fw-bold mb-0">--°</h4>
+                                    <span class="material-symbols-outlined text-primary mb-2" style="font-size: 3rem;">water_drop</span>
+                                    <p class="text-muted fs-8 text-uppercase mb-1">Curah Hujan</p>
+                                    <h4 id="precipVal" class="text-white fw-bold mb-0">-- mm</h4>
                                 </div>
                             </div>
                             
@@ -340,17 +340,17 @@ async function selectCountry(index) {
             .bindPopup(country.name.common)
             .openPopup();
         
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,precipitation,wind_speed_10m,weather_code,is_day`);
         const weatherData = await res.json();
         
-        if(weatherData && weatherData.current_weather) {
-            const current = weatherData.current_weather;
-            document.getElementById('tempVal').textContent = `${current.temperature}°C`;
-            document.getElementById('windVal').textContent = `${current.windspeed} km/h`;
+        if(weatherData && weatherData.current) {
+            const current = weatherData.current;
+            document.getElementById('tempVal').textContent = `${current.temperature_2m}°C`;
+            document.getElementById('windVal').textContent = `${current.wind_speed_10m} km/h`;
             document.getElementById('weatherTime').textContent = `Local Time Sync: ${current.time.replace('T', ' ')}`;
             
             // Fill New Data Boxes
-            document.getElementById('windDirVal').textContent = `${current.winddirection}°`;
+            document.getElementById('precipVal').textContent = `${current.precipitation} mm`;
             
             if (current.is_day === 1) {
                 document.getElementById('dayNightVal').textContent = 'Siang';
@@ -363,7 +363,7 @@ async function selectCountry(index) {
             }
             
             let cond = 'Unknown';
-            const code = current.weathercode;
+            const code = current.weather_code;
             if(code === 0) cond = 'Cerah';
             else if(code <= 3) cond = 'Berawan';
             else if(code <= 48) cond = 'Berkabut';
@@ -373,26 +373,26 @@ async function selectCountry(index) {
             else if(code >= 95) cond = 'Badai Petir';
             document.getElementById('conditionVal').textContent = cond;
             
-            // Calculate pseudo storm risk based on windspeed
+            // Calculate pseudo storm risk based on windspeed and precipitation
             const riskContainer = document.getElementById('riskContainer');
             const riskIcon = document.getElementById('riskIcon');
             const riskVal = document.getElementById('riskVal');
             
-            if (current.windspeed > 40) {
-                riskContainer.className = 'p-3 bg-danger bg-opacity-10 rounded-3 border border-danger border-opacity-25';
-                riskIcon.className = 'material-symbols-outlined text-danger';
+            if (current.wind_speed_10m > 40 || current.precipitation > 20) {
+                riskContainer.className = 'p-3 bg-danger bg-opacity-10 rounded-3 border border-danger border-opacity-25 h-100 d-flex flex-column justify-content-center align-items-center transition-all hover-glow';
+                riskIcon.className = 'material-symbols-outlined text-danger mb-2';
                 riskIcon.textContent = 'warning';
                 riskVal.className = 'text-danger fw-bold mb-0';
                 riskVal.textContent = 'HIGH';
-            } else if (current.windspeed > 20) {
-                riskContainer.className = 'p-3 bg-warning bg-opacity-10 rounded-3 border border-warning border-opacity-25';
-                riskIcon.className = 'material-symbols-outlined text-warning';
+            } else if (current.wind_speed_10m > 20 || current.precipitation > 5) {
+                riskContainer.className = 'p-3 bg-warning bg-opacity-10 rounded-3 border border-warning border-opacity-25 h-100 d-flex flex-column justify-content-center align-items-center transition-all hover-glow';
+                riskIcon.className = 'material-symbols-outlined text-warning mb-2';
                 riskIcon.textContent = 'error';
                 riskVal.className = 'text-warning fw-bold mb-0';
                 riskVal.textContent = 'MEDIUM';
             } else {
-                riskContainer.className = 'p-3 bg-success bg-opacity-10 rounded-3 border border-success border-opacity-25';
-                riskIcon.className = 'material-symbols-outlined text-success';
+                riskContainer.className = 'p-3 bg-success bg-opacity-10 rounded-3 border border-success border-opacity-25 h-100 d-flex flex-column justify-content-center align-items-center transition-all hover-glow';
+                riskIcon.className = 'material-symbols-outlined text-success mb-2';
                 riskIcon.textContent = 'verified_user';
                 riskVal.className = 'text-success fw-bold mb-0';
                 riskVal.textContent = 'LOW';

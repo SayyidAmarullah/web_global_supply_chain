@@ -7,9 +7,9 @@
         <div>
             <h1 class="h3 fw-bold text-white mb-0 d-flex align-items-center gap-2">
                 <span class="material-symbols-outlined text-success fs-2">query_stats</span> 
-                Executive Analytics & Reporting
+                Data Visualization Dashboard
             </h1>
-            <p class="text-muted fs-7 mt-1">Business intelligence, KPI monitoring, and forecasting</p>
+            <p class="text-muted fs-7 mt-1">Global macroeconomic trends and risk intelligence</p>
         </div>
         <div class="d-flex gap-2">
             <div class="dropdown">
@@ -39,27 +39,27 @@
     <!-- Top KPIs -->
     <div class="row g-4 mb-2">
         <div class="col-md-3">
-            <x-card title="Total Revenue" icon="account_balance_wallet" glow="success">
+            <x-card title="Global GDP Growth" icon="public" glow="cyan">
                 <div class="px-3 pb-3">
-                    <h2 class="text-success fw-bold mb-1">${{ number_format($totalRevenue, 0) }}</h2>
-                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25"><span class="material-symbols-outlined fs-8 align-middle">trending_up</span> +12.4% vs last period</span>
+                    <h2 class="text-cyan-glow fw-bold mb-1">3.2%</h2>
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25"><span class="material-symbols-outlined fs-8 align-middle">trending_up</span> +0.1% vs last year</span>
                 </div>
             </x-card>
         </div>
         <div class="col-md-3">
-            <x-card title="Net Profit" icon="savings" glow="cyan">
+            <x-card title="Avg Global Inflation" icon="trending_up" glow="danger">
                 <div class="px-3 pb-3">
-                    <h2 class="text-white fw-bold mb-1">${{ number_format($totalProfit, 0) }}</h2>
-                    <span class="text-muted fs-8">Margin: <strong class="text-cyan-glow">{{ number_format($profitMargin, 1) }}%</strong></span>
+                    <h2 class="text-danger fw-bold mb-1">5.8%</h2>
+                    <span class="text-muted fs-8">Status: <strong class="text-danger">Elevated</strong></span>
                 </div>
             </x-card>
         </div>
         <div class="col-md-3">
-            <x-card title="Total Shipments" icon="local_shipping" glow="purple">
+            <x-card title="DXY Volatility Index" icon="currency_exchange" glow="purple">
                 <div class="px-3 pb-3">
-                    <h2 class="text-white fw-bold mb-1">{{ $totalShipments }}</h2>
+                    <h2 class="text-white fw-bold mb-1">105.5</h2>
                     <div class="d-flex gap-2">
-                        <span class="text-muted fs-8"><strong class="text-white">{{ $completedShipments }}</strong> Completed</span>
+                        <span class="text-muted fs-8"><strong class="text-purple-neon">High</strong> Market Variance</span>
                     </div>
                 </div>
             </x-card>
@@ -76,17 +76,17 @@
 
     <!-- Charts Row 1 -->
     <div class="row g-4 mb-2">
-        <div class="col-md-8">
-            <x-card title="Revenue & Profit Trend" icon="monitoring" glow="cyan">
+        <div class="col-md-6">
+            <x-card title="Global GDP Trend" icon="account_balance" glow="cyan">
                 <div class="p-3" style="height: 300px;">
-                    <canvas id="revenueChart"></canvas>
+                    <canvas id="gdpTrendChart"></canvas>
                 </div>
             </x-card>
         </div>
-        <div class="col-md-4">
-            <x-card title="Import vs Export" icon="pie_chart" glow="purple">
+        <div class="col-md-6">
+            <x-card title="Global Inflation Trend" icon="trending_up" glow="danger">
                 <div class="p-3" style="height: 300px;">
-                    <canvas id="tradeTypeChart"></canvas>
+                    <canvas id="inflationTrendChart"></canvas>
                 </div>
             </x-card>
         </div>
@@ -94,69 +94,22 @@
 
     <!-- Charts Row 2 -->
     <div class="row g-4 mb-2">
-        <div class="col-md-4">
-            <x-card title="AI Confidence & Opportunity" icon="radar" glow="success">
+        <div class="col-md-6">
+            <x-card title="Currency Volatility Trend" icon="currency_exchange" glow="purple">
                 <div class="p-3" style="height: 300px;">
-                    <canvas id="radarChart"></canvas>
+                    <canvas id="currencyTrendChart"></canvas>
                 </div>
             </x-card>
         </div>
-        <div class="col-md-8">
-            <x-card title="Revenue Forecast (Next 6 Months)" icon="online_prediction" glow="warning">
+        <div class="col-md-6">
+            <x-card title="Global Risk Trend" icon="warning" glow="warning">
                 <div class="p-3" style="height: 300px;">
-                    <canvas id="forecastChart"></canvas>
+                    <canvas id="riskTrendChart"></canvas>
                 </div>
             </x-card>
         </div>
     </div>
 
-    <!-- Search & Data Table -->
-    <x-card title="Shipment Analytical Data" icon="table_chart">
-        <div class="p-3">
-            <div class="d-flex mb-3 gap-2">
-                <input type="text" class="form-control bg-dark border-secondary text-white w-25" placeholder="Search Shipment, Country, Port...">
-                <button class="btn btn-outline-secondary">Search</button>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0">
-                    <thead>
-                        <tr class="border-bottom border-secondary border-opacity-25">
-                            <th class="text-muted fs-8 text-uppercase pb-2">Shipment</th>
-                            <th class="text-muted fs-8 text-uppercase pb-2">Type</th>
-                            <th class="text-muted fs-8 text-uppercase pb-2">Commodity</th>
-                            <th class="text-muted fs-8 text-uppercase pb-2">Revenue</th>
-                            <th class="text-muted fs-8 text-uppercase pb-2">Profit</th>
-                            <th class="text-muted fs-8 text-uppercase pb-2">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($shipments->take(10) as $shipment)
-                        <tr>
-                            <td class="text-white fw-bold">{{ $shipment->shipment_number }}</td>
-                            <td><span class="badge bg-secondary">{{ ucfirst($shipment->type) }}</span></td>
-                            <td class="text-muted">{{ $shipment->commodity }}</td>
-                            <td class="text-success fw-bold">${{ number_format($shipment->estimated_revenue, 0) }}</td>
-                            <td class="text-cyan-glow fw-bold">${{ number_format($shipment->estimated_profit, 0) }}</td>
-                            <td>
-                                @if($shipment->status === 'Redirected')
-                                    <span class="badge bg-purple bg-opacity-25 text-purple-neon">{{ $shipment->status }}</span>
-                                @elseif($shipment->status === 'Completed')
-                                    <span class="badge bg-success bg-opacity-25 text-success">{{ $shipment->status }}</span>
-                                @else
-                                    <span class="badge bg-warning bg-opacity-25 text-warning">{{ $shipment->status }}</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">No data available for the selected timeframe.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </x-card>
 </main>
 
 <!-- Chart.js -->
@@ -184,102 +137,82 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // 1. Revenue & Profit Trend (Area/Line)
-    const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
-    new Chart(ctxRevenue, {
+    // 1. GDP Trend (Line Chart)
+    const ctxGdp = document.getElementById('gdpTrendChart').getContext('2d');
+    new Chart(ctxGdp, {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [{
+                label: 'Global GDP Growth (%)',
+                data: [2.8, -3.1, 6.2, 3.4, 3.1, 3.2],
+                borderColor: '#38BDF8',
+                backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: chartOptions
+    });
+
+    // 2. Inflation Trend (Bar Chart)
+    const ctxInflation = document.getElementById('inflationTrendChart').getContext('2d');
+    new Chart(ctxInflation, {
+        type: 'bar',
+        data: {
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [{
+                label: 'Global Inflation Rate (%)',
+                data: [3.5, 3.2, 4.7, 8.7, 6.8, 5.8],
+                backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                borderRadius: 4
+            }]
+        },
+        options: chartOptions
+    });
+
+    // 3. Currency Volatility Trend (Line Chart)
+    const ctxCurrency = document.getElementById('currencyTrendChart').getContext('2d');
+    new Chart(ctxCurrency, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
             datasets: [
                 {
-                    label: 'Revenue',
-                    data: {!! json_encode($monthlyRevenue) !!},
-                    borderColor: '#38BDF8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                    label: 'USD Index (DXY)',
+                    data: [103.5, 104.2, 103.8, 105.1, 104.7, 105.5],
+                    borderColor: '#8B5CF6',
                     borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
+                    tension: 0.3
                 },
                 {
-                    label: 'Profit',
-                    data: {!! json_encode($monthlyProfit) !!},
-                    borderColor: '#22C55E',
-                    backgroundColor: 'transparent',
+                    label: 'EUR/USD Volatility',
+                    data: [1.08, 1.07, 1.09, 1.06, 1.08, 1.07],
+                    borderColor: '#A0ABC0',
                     borderWidth: 2,
                     borderDash: [5, 5],
-                    fill: false,
-                    tension: 0.4
+                    tension: 0.3
                 }
             ]
         },
         options: chartOptions
     });
 
-    // 2. Import vs Export (Pie Chart)
-    const ctxTradeType = document.getElementById('tradeTypeChart').getContext('2d');
-    new Chart(ctxTradeType, {
-        type: 'doughnut',
+    // 4. Global Risk Trend (Area Chart)
+    const ctxRisk = document.getElementById('riskTrendChart').getContext('2d');
+    new Chart(ctxRisk, {
+        type: 'line',
         data: {
-            labels: ['Import', 'Export'],
+            labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q1 (Current)'],
             datasets: [{
-                data: [{{ $importVsExport['import'] }}, {{ $importVsExport['export'] }}],
-                backgroundColor: ['#8B5CF6', '#38BDF8'],
-                borderWidth: 0,
-                hoverOffset: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom', labels: { color: '#A0ABC0' } }
-            },
-            cutout: '70%'
-        }
-    });
-
-    // 3. AI Radar Chart
-    const ctxRadar = document.getElementById('radarChart').getContext('2d');
-    new Chart(ctxRadar, {
-        type: 'radar',
-        data: {
-            labels: ['Opportunity', 'Demand', 'Supply', 'Profitability', 'Stability'],
-            datasets: [{
-                label: 'Global Metrics',
-                data: [{{ $globalOppScore }}, 85, 60, 92, 70],
-                backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                borderColor: '#22C55E',
-                pointBackgroundColor: '#22C55E'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                r: {
-                    angleLines: { color: 'rgba(255,255,255,0.1)' },
-                    grid: { color: 'rgba(255,255,255,0.1)' },
-                    pointLabels: { color: '#A0ABC0' },
-                    ticks: { display: false }
-                }
-            },
-            plugins: {
-                legend: { display: false }
-            }
-        }
-    });
-
-    // 4. Forecast Chart (Bar Chart)
-    const ctxForecast = document.getElementById('forecastChart').getContext('2d');
-    new Chart(ctxForecast, {
-        type: 'bar',
-        data: {
-            labels: ['Month +1', 'Month +2', 'Month +3', 'Month +4', 'Month +5', 'Month +6'],
-            datasets: [{
-                label: 'Projected Revenue',
-                data: {!! json_encode($revenueForecast) !!},
-                backgroundColor: 'rgba(245, 158, 11, 0.8)',
-                borderRadius: 4
+                label: 'Global Risk Index',
+                data: [35, 42, 58, 48, 55],
+                borderColor: '#F59E0B',
+                backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
             }]
         },
         options: chartOptions

@@ -80,9 +80,14 @@ class IntelligenceService
         ];
     }
 
-    public function getPortIntelligence($perPage = 15)
+    public function getPortIntelligence($perPage = 15, $search = null)
     {
-        return \App\Models\Port::paginate($perPage);
+        $query = \App\Models\Port::query();
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('country', 'like', "%{$search}%");
+        }
+        return $query->latest()->paginate($perPage)->withQueryString();
     }
 
     public function getAllPortMapData()

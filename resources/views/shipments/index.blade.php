@@ -38,7 +38,7 @@
     </div>
 
     <!-- Active Shipments Table -->
-    <x-card title="Active & Recent Shipments" icon="table_chart">
+    <x-card title="Active & Recent Shipments" icon="table_chart" class="h-auto">
         <div class="table-responsive">
             <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
                 <thead style="background: rgba(255,255,255,0.05);">

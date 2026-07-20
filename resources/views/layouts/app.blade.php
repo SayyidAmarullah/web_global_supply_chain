@@ -6,6 +6,26 @@
     <title>Global Supply Chain Risk Intelligence Platform</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        /* Hide Google Translate top bar and elements */
+        .goog-te-banner-frame.skiptranslate, 
+        .goog-te-banner-frame,
+        #goog-gt-tt,
+        .goog-te-balloon-frame,
+        iframe.goog-te-menu-frame {
+            display: none !important;
+        }
+        body {
+            top: 0px !important;
+        }
+        .goog-text-highlight {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+        .no-caret::after {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
     
@@ -25,14 +45,16 @@
         <!-- Top Navigation -->
         <nav class="top-nav glass-panel">
             <div class="d-flex align-items-center">
-                <span class="material-symbols-outlined text-cyan-glow me-2 fs-3" style="color: var(--cyan-glow);">public</span>
-                <span class="fs-5 fw-bold text-white tracking-tight">GLOBAL<span style="color: var(--cyan-glow);">CHAIN</span></span>
+                <span class="material-symbols-outlined text-cyan-glow me-2 fs-3" style="color: var(--cyan-glow);">hub</span>
+                <span class="fs-5 fw-bold text-white tracking-tight notranslate" style="letter-spacing: 0.5px;">GLOBAL<span style="color: var(--cyan-glow); font-weight: 300;">CHAIN</span></span>
             </div>
             
-            <div class="glass-pill search-global">
-                <span class="material-symbols-outlined text-muted fs-5">search</span>
-                <input type="text" placeholder="Search Country, Commodity, Port, News...">
-            </div>
+            <form action="{{ route('search') }}" method="GET" class="glass-pill search-global m-0 d-flex align-items-center">
+                <button type="submit" class="btn p-0 border-0 text-muted d-flex align-items-center" style="background: none;">
+                    <span class="material-symbols-outlined fs-5">search</span>
+                </button>
+                <input type="text" name="q" placeholder="Search Country, Commodity, Port, News..." class="border-0 bg-transparent text-white shadow-none ms-2 w-100 placeholder-light" style="outline: none;">
+            </form>
             
             <div class="d-flex align-items-center gap-4">
                 <div class="d-flex flex-column text-end d-none d-lg-flex">
@@ -44,13 +66,20 @@
                     <button class="btn btn-link text-muted p-0 text-decoration-none hover-neon-text" onclick="toggleTheme()" id="theme-toggle-btn">
                         <span class="material-symbols-outlined fs-5">light_mode</span>
                     </button>
-                    <button class="btn btn-link text-muted p-0 text-decoration-none hover-neon-text">
-                        <span class="material-symbols-outlined fs-5">translate</span>
-                    </button>
-                    <button class="btn btn-link text-muted p-0 position-relative text-decoration-none hover-neon-text">
-                        <span class="material-symbols-outlined fs-5">notifications</span>
-                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger rounded-circle"></span>
-                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-link text-muted p-0 text-decoration-none hover-neon-text dropdown-toggle no-caret" data-bs-toggle="dropdown" aria-expanded="false" title="Translate Page">
+                            <span class="material-symbols-outlined fs-5">translate</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-secondary mt-2 glass-panel" style="min-width: 175px;">
+                            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" onclick="changeLanguage('en'); return false;">🇺🇸 English</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" onclick="changeLanguage('id'); return false;">🇮🇩 Indonesia</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" onclick="changeLanguage('es'); return false;">🇪🇸 Español</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" onclick="changeLanguage('de'); return false;">🇩🇪 Deutsch</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" onclick="changeLanguage('ja'); return false;">🇯🇵 日本語</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" onclick="changeLanguage('zh-CN'); return false;">🇨🇳 中文 (简体)</a></li>
+                        </ul>
+                    </div>
+                    <div id="google_translate_element" style="display:none; visibility:hidden; height:0; width:0; overflow:hidden;"></div>
                 </div>
                 
                 <div class="dropdown">
@@ -127,21 +156,33 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('intelligence.currencies') }}" class="{{ request()->routeIs('intelligence.currencies') ? 'active' : '' }}">
-                            <span class="material-symbols-outlined icon">payments</span>
-                            <span class="text">Currencies & Macro</span>
+                        <a href="{{ route('intelligence.countries') }}" class="{{ request()->routeIs('intelligence.countries') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon">public</span>
+                            <span class="text">Global Country Dashboard</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('intelligence.weather') }}" class="{{ request()->routeIs('intelligence.weather') ? 'active' : '' }}">
-                            <span class="material-symbols-outlined icon">storm</span>
-                            <span class="text">Weather Intel</span>
+                        <a href="{{ route('intelligence.compare') }}" class="{{ request()->routeIs('intelligence.compare') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon text-purple-neon">compare_arrows</span>
+                            <span class="text">Country Comparison Engine</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('intelligence.commodity-compare') }}" class="{{ request()->routeIs('intelligence.commodity-compare') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon text-info">balance</span>
+                            <span class="text">Commodity Comparison</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('intelligence.exchange-rate') }}" class="{{ request()->routeIs('intelligence.exchange-rate') ? 'active' : '' }}">
+                            <span class="material-symbols-outlined icon">currency_exchange</span>
+                            <span class="text">FX Exchange Rates</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('intelligence.risk-alerts') }}" class="{{ request()->routeIs('intelligence.risk-alerts') ? 'active' : '' }}">
                             <span class="material-symbols-outlined icon text-warning">security</span>
-                            <span class="text text-warning">Risk Alerts</span>
+                            <span class="text text-warning">Risk Scoring Engine</span>
                         </a>
                     </li>
                     <li>
@@ -223,13 +264,21 @@
         
     </div>
 
-    <!-- Floating AI Assistant -->
-    <div class="ai-assistant-orb">
-        <span class="material-symbols-outlined text-white fs-2">smart_toy</span>
-    </div>
+
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
+        // Prevent Google Translate from translating material symbols icons (protect ligatures)
+        const iconObserver = new MutationObserver(() => {
+            document.querySelectorAll('.material-symbols-outlined').forEach(el => {
+                if (!el.classList.contains('notranslate')) {
+                    el.classList.add('notranslate');
+                }
+            });
+        });
+        iconObserver.observe(document.documentElement, { childList: true, subtree: true });
+        document.querySelectorAll('.material-symbols-outlined').forEach(el => el.classList.add('notranslate'));
+
         // Clock
         function updateClock() {
             const now = new Date();
@@ -272,6 +321,30 @@
             const btnIcon = document.querySelector('#theme-toggle-btn span');
             if(btnIcon) btnIcon.innerText = 'dark_mode';
         }
+
+        // Google Translate Initialization Callback
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+
+        // Programmatic Language Change via Cookie
+        function changeLanguage(langCode) {
+            if (langCode === 'en') {
+                document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + window.location.hostname;
+                localStorage.removeItem('selected_lang');
+            } else {
+                document.cookie = 'googtrans=/en/' + langCode + '; path=/;';
+                document.cookie = 'googtrans=/en/' + langCode + '; path=/; domain=' + window.location.hostname;
+                localStorage.setItem('selected_lang', langCode);
+            }
+            window.location.reload();
+        }
     </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

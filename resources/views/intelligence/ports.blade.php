@@ -74,6 +74,15 @@ nav.d-flex .small.text-muted .fw-semibold {
 :root[data-theme="light"] nav.d-flex .small.text-muted .fw-semibold {
     color: #111827 !important;
 }
+
+/* Fix for Search Input Placeholder Contrast */
+.placeholder-light::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+    opacity: 1;
+}
+:root[data-theme="light"] .placeholder-light::placeholder {
+    color: rgba(0, 0, 0, 0.6) !important;
+}
 </style>
 <main class="content-area d-flex flex-column w-100 h-100 gap-4 overflow-auto pe-auto p-4">
     <!-- Header -->
@@ -154,12 +163,12 @@ nav.d-flex .small.text-muted .fw-semibold {
             <div class="glass-panel rounded-4 p-4 flex-grow-1 d-flex flex-column h-100">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="text-white fw-bold mb-0">Strategic Port Status</h5>
-                    <div class="input-group" style="width: 250px;">
-                        <span class="input-group-text bg-transparent border-secondary text-muted border-end-0">
+                    <form action="{{ route('intelligence.ports') }}" method="GET" class="input-group" style="width: 250px;">
+                        <button type="submit" class="input-group-text bg-transparent border-secondary text-muted border-end-0">
                             <span class="material-symbols-outlined fs-6">search</span>
-                        </span>
-                        <input type="text" class="form-control bg-transparent border-secondary border-start-0 text-white" placeholder="Search port...">
-                    </div>
+                        </button>
+                        <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-transparent border-secondary border-start-0 text-white shadow-none placeholder-light" placeholder="Search port or country...">
+                    </form>
                 </div>
 
                 <div class="table-responsive flex-grow-1" style="overflow-y: auto; min-height: 0;">
@@ -176,7 +185,7 @@ nav.d-flex .small.text-muted .fw-semibold {
                         </thead>
                         <tbody>
                             @foreach($ports as $port)
-                            <tr style="cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(56, 189, 248, 0.05)'" onmouseout="this.style.background='transparent'" onclick="focusPortMap({{ $port['latitude'] }}, {{ $port['longitude'] }}, '{{ $port['name'] }}', '{{ $port['congestion'] }}')">
+                            <tr class="port-row" data-name="{{ strtolower($port['name']) }}" data-country="{{ strtolower($port['country']) }}" style="cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(56, 189, 248, 0.05)'" onmouseout="this.style.background='transparent'" onclick="focusPortMap({{ $port['latitude'] }}, {{ $port['longitude'] }}, '{{ $port['name'] }}', '{{ $port['congestion'] }}')">
                                 <td class="py-3">
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: rgba(56, 189, 248, 0.1);">
@@ -213,7 +222,7 @@ nav.d-flex .small.text-muted .fw-semibold {
                                     </div>
                                 </td>
                                 <td class="text-end">
-                                    <button class="btn btn-sm glass-pill text-cyan-glow hover-white" 
+                                    <button class="btn btn-sm glass-pill text-white fw-bold hover-white" style="border-color: rgba(255, 255, 255, 0.2);"
                                             onclick="event.stopPropagation();"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#portIntelModal"

@@ -11,7 +11,7 @@
             </h1>
             <p class="text-muted fs-7 mt-1 ms-5">Global settings, backups, and environment configurations</p>
         </div>
-        <button class="btn btn-success d-flex align-items-center gap-2 px-3 py-2">
+        <button class="btn btn-success d-flex align-items-center gap-2 px-3 py-2" onclick="document.getElementById('settingsForm').submit();">
             <span class="material-symbols-outlined fs-5">save</span> Save Changes
         </button>
     </div>
@@ -21,14 +21,15 @@
         <div class="col-md-6">
             <x-card title="General Settings" icon="tune" glow="purple">
                 <div class="p-4">
-                    <form>
+                    <form action="{{ route('admin.settings.update') }}" method="POST" id="settingsForm">
+                        @csrf
                         <div class="mb-3">
                             <label class="form-label text-muted fs-8 text-uppercase">Application Name</label>
-                            <input type="text" class="form-control bg-dark border-secondary text-white" value="Global Supply Chain Platform">
+                            <input type="text" name="app_name" class="form-control bg-dark border-secondary text-white" value="Global Supply Chain Platform">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-muted fs-8 text-uppercase">Timezone</label>
-                            <select class="form-select bg-dark border-secondary text-white">
+                            <select name="timezone" class="form-select bg-dark border-secondary text-white">
                                 <option value="UTC" selected>UTC (Coordinated Universal Time)</option>
                                 <option value="EST">EST (Eastern Standard Time)</option>
                                 <option value="GMT">GMT (Greenwich Mean Time)</option>
@@ -36,7 +37,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-muted fs-8 text-uppercase">Default Theme</label>
-                            <select class="form-select bg-dark border-secondary text-white">
+                            <select name="theme" class="form-select bg-dark border-secondary text-white">
                                 <option value="dark" selected>Aurora Dark Mode</option>
                                 <option value="light">Aurora Light Mode</option>
                             </select>
@@ -44,7 +45,7 @@
                         <div class="mb-0">
                             <label class="form-label text-muted fs-8 text-uppercase">Max File Upload Size</label>
                             <div class="input-group">
-                                <input type="number" class="form-control bg-dark border-secondary text-white" value="50">
+                                <input type="number" name="max_upload" class="form-control bg-dark border-secondary text-white" value="50">
                                 <span class="input-group-text bg-dark border-secondary text-muted">MB</span>
                             </div>
                         </div>

@@ -174,8 +174,8 @@
             </div>
 
             <!-- Exports -->
-            <div class="col-md-6">
-                <div class="glass-panel p-4 rounded-4 h-100 kpi-card border-start border-4 border-warning">
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-panel p-4 rounded-4 h-100 kpi-card border-top border-4 border-warning">
                     <div class="d-flex justify-content-between align-items-start mb-4">
                         <div class="d-flex align-items-center gap-2">
                             <div class="p-2 bg-warning bg-opacity-10 rounded-3">
@@ -190,8 +190,8 @@
             </div>
 
             <!-- Imports -->
-            <div class="col-md-6">
-                <div class="glass-panel p-4 rounded-4 h-100 kpi-card border-start border-4 border-primary">
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-panel p-4 rounded-4 h-100 kpi-card border-top border-4 border-primary">
                     <div class="d-flex justify-content-between align-items-start mb-4">
                         <div class="d-flex align-items-center gap-2">
                             <div class="p-2 bg-primary bg-opacity-10 rounded-3">
@@ -202,6 +202,22 @@
                     </div>
                     <h2 id="importVal" class="text-white fw-bold mb-1">Loading...</h2>
                     <p class="text-muted fs-8 mb-0">Goods and Services (Current US$)</p>
+                </div>
+            </div>
+
+            <!-- Exchange Rate -->
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-panel p-4 rounded-4 h-100 kpi-card border-top border-4 border-info">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="p-2 bg-info bg-opacity-10 rounded-3">
+                                <span class="material-symbols-outlined text-info fs-4">currency_exchange</span>
+                            </div>
+                            <h6 class="text-muted text-uppercase fw-bold fs-8 mb-0 tracking-wide">Exchange Rate</h6>
+                        </div>
+                    </div>
+                    <h2 id="exchangeVal" class="text-white fw-bold mb-1">Loading...</h2>
+                    <p class="text-muted fs-8 mb-0">Real-time value vs 1 USD</p>
                 </div>
             </div>
         </div>
@@ -273,6 +289,7 @@ async function fetchMacroData(countryCode, countryName) {
     try {
         let latestYear = 'N/A';
         
+        // 1. Fetch World Bank Data
         for (const [key, indicator] of Object.entries(endpoints)) {
             const res = await fetch(`https://api.worldbank.org/v2/country/${countryCode}/indicator/${indicator}?format=json&per_page=5`);
             const data = await res.json();
@@ -300,6 +317,36 @@ async function fetchMacroData(countryCode, countryName) {
         }
         
         document.getElementById('dataYearDisplay').textContent = `Latest Available Data: ${latestYear}`;
+        
+        // 2. Fetch Exchange Rate Data
+        try {
+            // Get currency code for this country
+            const cRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}?fields=currencies`);
+            const cData = await cRes.json();
+            if(cData && cData.currencies) {
+                const currencyCode = Object.keys(cData.currencies)[0];
+                
+                // Fetch real-time exchange rate vs USD
+                if (currencyCode === 'USD') {
+                    document.getElementById('exchangeVal').innerHTML = `1.00 <span class="fs-6 text-muted">USD</span>`;
+                } else {
+                    const exRes = await fetch('https://open.er-api.com/v6/latest/USD');
+                    const exData = await exRes.json();
+                    
+                    if (exData && exData.rates && exData.rates[currencyCode]) {
+                        const rate = exData.rates[currencyCode];
+                        document.getElementById('exchangeVal').innerHTML = `${rate.toFixed(2)} <span class="fs-6 text-muted">${currencyCode}</span>`;
+                    } else {
+                        document.getElementById('exchangeVal').textContent = 'N/A';
+                    }
+                }
+            } else {
+                document.getElementById('exchangeVal').textContent = 'N/A';
+            }
+        } catch (err) {
+            console.error("Exchange Rate fetch failed:", err);
+            document.getElementById('exchangeVal').textContent = 'Error';
+        }
         
     } catch (e) {
         console.error("Failed to fetch World Bank Data:", e);

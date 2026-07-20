@@ -1,58 +1,124 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌐 GlobalChain - Enterprise Logistics Intelligence
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![GlobalChain Banner](https://via.placeholder.com/1200x400.png?text=GlobalChain+-+Logistics+Intelligence)
 
-## About Laravel
+**GlobalChain** is a comprehensive Enterprise Logistics Intelligence platform built with Laravel. It is designed to provide real-time tracking, macro-economic analytics, risk assessment, and AI-driven decision support for global supply chain and maritime trade operations.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Key Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🌟 Core Modules & Dashboards
+*   **Global Mission Control:** A centralized command center displaying real-time KPIs, active transit fleets, global risk index, and trade opportunities.
+*   **Dynamic Glassmorphism UI:** Built with enterprise-grade UI/UX standards, featuring a sleek dark-aurora theme and responsive glassmorphism effects.
+*   **Multi-Language & Auto-Translate:** Integrated multi-language support (Indonesian, English, Spanish, etc.) utilizing a specialized `MutationObserver` to ensure Google Material Symbols remain intact during translation.
+*   **Global Search Engine:** Instantly search across shipments, ports, commodities, and countries from anywhere in the platform.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🚢 Supply Chain Management
+*   **Shipment Intel:** End-to-end CRUD management for tracking global cargo routes, status, and operational metrics.
+*   **Interactive Global Trade Map:** Real-time spatial visualization using **Leaflet.js**, mapping vessel coordinates, major ports, weather alerts, and country risk levels.
+*   **Financial Risk & Revenue Simulation:** Automated calculations for estimated cargo revenue, operational costs, and profit margins.
 
-## Learning Laravel
+### 🤖 Intelligence & AI Analytics
+*   **AI Decision Support Engine:** Autonomous algorithmic engine recommending optimal shipping routes based on geopolitical tensions, distance, and weather anomalies.
+*   **Risk Scoring Engine:** Real-time risk synthesis aggregating Weather Anomalies (30%), Inflation Rates (20%), FX Volatility (10%), and Global News Sentiment (40%).
+*   **Live Weather Integration:** Real-time meteorological data at ports and sea routes powered by the **Open-Meteo API**.
+*   **Global Port Intelligence:** Monitor global port congestion, average wait times, and operational statuses via an interactive congestion heatmap.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🌍 Macroeconomic & Market Monitoring
+*   **Global Country Dashboard:** In-depth economic profiles utilizing **REST Countries** and **World Bank APIs** (GDP, Inflation, Demographics).
+*   **Country & Commodity Comparison Engine:** Head-to-head visual analytics tools to compare macroeconomics or asset price volatility (e.g., Crude Oil WTI vs. Brent) for strategic arbitrage.
+*   **Advanced FX Analytics:** Real-time currency exchange monitoring with 30-day volatility trends and relative power radar charts.
+*   **Global News RSS:** Automated supply chain news aggregator equipped with Lexicon-based **AI Sentiment Analysis** (Positive, Negative, Neutral).
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🔒 Security & Administration
+*   **Role-Based Access Control (RBAC):** Strict authorization layers differentiating **Administrators**, **Importers**, **Exporters**, and standard **Users**.
+*   **Admin Control Center:** Exclusive panel for system configuration, user management, and API health monitoring.
+*   **Immutable System Audit Logs:** Continuous tracking of critical actions (login attempts, data exports, config changes) to ensure operational accountability.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 🛠️ Tech Stack
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+*   **Framework:** [Laravel 11](https://laravel.com/) (PHP)
+*   **Frontend:** Blade Templates, [Tailwind CSS](https://tailwindcss.com/), Bootstrap 5 (Grid/Utilities)
+*   **Database:** MySQL
+*   **Maps & Geospatial:** [Leaflet.js](https://leafletjs.com/)
+*   **Charts & Visualization:** Chart.js, ApexCharts (Optional)
+*   **Third-Party APIs:** Open-Meteo API, World Bank API, REST Countries, ExchangeRate API, Google News RSS.
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
-```
+## 💻 Installation & Setup
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Follow these steps to run the project on your local environment (e.g., using Laragon, XAMPP, or Laravel Herd).
 
-## Contributing
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/yourusername/globalchain.git
+    cd globalchain
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2.  **Install PHP dependencies:**
+    ```bash
+    composer install
+    ```
 
-## Code of Conduct
+3.  **Install Node.js dependencies:**
+    ```bash
+    npm install
+    npm run build
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4.  **Environment Setup:**
+    Duplicate the `.env.example` file and rename it to `.env`.
+    ```bash
+    cp .env.example .env
+    ```
+    Update your `.env` file with your database credentials:
+    ```env
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=webglobalchain
+    DB_USERNAME=root
+    DB_PASSWORD=
+    ```
 
-## Security Vulnerabilities
+5.  **Generate Application Key:**
+    ```bash
+    php artisan key:generate
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+6.  **Run Migrations & Seeders (Important for Roles & Mock Data):**
+    ```bash
+    php artisan migrate --seed
+    ```
 
-## License
+7.  **Start the Local Development Server:**
+    ```bash
+    php artisan serve
+    ```
+    *The application will be accessible at `http://localhost:8000` or your configured local domain (e.g., `http://webglobalchain.test`).*
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 📸 Screenshots
+*(You can replace these placeholder links with actual image paths once uploaded to your repository)*
+
+*   **Global Mission Control**
+    ![Mission Control](docs/mission_control.png)
+*   **Global Trade Map**
+    ![Trade Map](docs/trade_map.png)
+*   **AI Decision Engine**
+    ![AI Decision Engine](docs/ai_decision.png)
+*   **Country Comparison Engine**
+    ![Country Comparison](docs/country_comparison.png)
+
+---
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/globalchain/issues).

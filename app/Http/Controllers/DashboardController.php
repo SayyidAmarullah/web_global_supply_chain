@@ -20,6 +20,13 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        // Backfill empty shipments
+        $emptyShipments = Shipment::whereNull('estimated_revenue')->orWhere('estimated_revenue', 0)->get();
+        foreach ($emptyShipments as $shipment) {
+            $shipment->calculateFinancials();
+            $shipment->save();
+        }
+
         // Get basic stats
         if ($user->role === 'admin') {
             $totalShipments = Shipment::count();

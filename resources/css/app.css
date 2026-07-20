@@ -1,44 +1,45 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'leaflet/dist/leaflet.css';
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-    --bg-deep-space: #050816;
-    --bg-navy: #0A1128;
-    --electric-blue: #4F8CFF;
-    --purple-neon: #8B5CF6;
-    --cyan-glow: #38BDF8;
-    --success: #22C55E;
-    --warning: #F59E0B;
-    --danger: #EF4444;
-    --text-main: #FFFFFF;
-    --text-muted: #A0ABC0; 
-    --glass-bg: rgba(10, 17, 40, 0.65);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: rgba(0,0,0,0.5);
-    --glass-shadow-heavy: rgba(0,0,0,0.5);
-    --pill-bg: rgba(255, 255, 255, 0.03);
-    --bs-body-font-family: 'Inter', sans-serif !important;
+    --bg-deep-space: #0f172a;
+    --bg-navy: #1e293b;
+    --electric-blue: #3b82f6;
+    --purple-neon: #6366f1;
+    --cyan-glow: #0ea5e9;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8; 
+    --glass-bg: rgba(15, 23, 42, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: rgba(0,0,0,0.2);
+    --glass-shadow-heavy: rgba(0,0,0,0.4);
+    --pill-bg: rgba(255, 255, 255, 0.04);
+    --bs-body-font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
 
 [data-theme="light"] {
-    --bg-deep-space: #E2E8F0;
-    --bg-navy: #FFFFFF;
-    --electric-blue: #2563EB;
-    --purple-neon: #7C3AED;
-    --cyan-glow: #0284C7;
-    --text-main: #0F172A;
-    --text-muted: #475569;
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(0, 0, 0, 0.1);
-    --glass-shadow: transparent;
-    --glass-shadow-heavy: transparent;
-    --pill-bg: rgba(0, 0, 0, 0.05);
+    --bg-deep-space: #f8fafc;
+    --bg-navy: #ffffff;
+    --electric-blue: #2563eb;
+    --purple-neon: #4f46e5;
+    --cyan-glow: #0284c7;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --glass-shadow: rgba(0,0,0,0.05);
+    --glass-shadow-heavy: rgba(0,0,0,0.1);
+    --pill-bg: rgba(0, 0, 0, 0.03);
 }
 
 body, h1, h2, h3, h4, h5, h6, p, a, span:not(.material-symbols-outlined), div, button, input {
-    font-family: 'Inter', sans-serif !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    letter-spacing: -0.01em;
 }
 
 body {
@@ -82,9 +83,9 @@ body {
     width: 60vw;
     height: 60vh;
     border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.15;
-    animation: auroraFloat 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+    filter: blur(140px);
+    opacity: 0.05;
+    animation: auroraFloat 30s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
 }
 .animated-bg::before {
     background: var(--electric-blue);
@@ -106,10 +107,11 @@ body {
 /* Core Glassmorphism */
 .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 10px 40px var(--glass-shadow), inset 0 0 0 1px rgba(255,255,255,0.03);
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px var(--glass-shadow), 0 2px 4px -2px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
 .glass-pill {
@@ -292,15 +294,15 @@ body {
     pointer-events: auto;
 }
 .widget-card {
-    border-radius: 20px;
+    border-radius: 12px;
     padding: 1.5rem;
     flex: 1;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, border-color 0.3s;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 .widget-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    border-color: rgba(79, 140, 255, 0.5);
-    box-shadow: 0 20px 50px var(--glass-shadow-heavy), 0 0 30px rgba(79, 140, 255, 0.15), inset 0 0 20px rgba(79, 140, 255, 0.1);
+    transform: translateY(-4px);
+    border-color: rgba(148, 163, 184, 0.2);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 
 /* Dynamic Right Information Panel */
@@ -320,29 +322,25 @@ body {
 /* Floating AI Assistant */
 .ai-assistant-orb {
     position: fixed;
-    bottom: 6rem;
+    bottom: 4rem;
     right: 2rem;
-    width: 65px;
-    height: 65px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--electric-blue), var(--purple-neon));
+    background: var(--bg-navy);
+    border: 1px solid var(--glass-border);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 1060;
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4), inset 0 0 10px rgba(255,255,255,0.5);
-    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s, background 0.2s;
     pointer-events: auto;
-    animation: orbPulse 3s infinite alternate;
 }
 .ai-assistant-orb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6), inset 0 0 20px rgba(255,255,255,0.6);
-}
-@keyframes orbPulse {
-    0% { box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3); }
-    100% { box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6); }
+    transform: scale(1.05);
+    background: var(--glass-bg);
 }
 
 /* Leaflet Customizations for Global Trade Platform */
@@ -377,6 +375,18 @@ body {
 }
 .table-dark td, .table-dark th {
     color: var(--text-main);
+}
+
+/* Form Overrides to look less boxy */
+.form-control, .form-select, .input-group-text {
+    border-radius: 8px;
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text-main) !important;
+}
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 2px var(--bg-deep-space), 0 0 0 4px var(--electric-blue);
+    border-color: var(--electric-blue) !important;
 }
 
 /* Button Overrides */

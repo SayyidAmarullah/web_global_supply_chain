@@ -133,6 +133,15 @@
     @keyframes dash { to { stroke-dashoffset: -1000; } }
 
     .country-hover { fill-opacity: 0.5 !important; stroke: #fff !important; stroke-width: 2 !important; cursor: pointer; }
+
+    .storm-pulse {
+        animation: stormPulse 2s infinite;
+    }
+    @keyframes stormPulse {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
 </style>
 
 <script>
@@ -141,7 +150,8 @@
         shipments: L.layerGroup(),
         routes: L.layerGroup(),
         ports: L.layerGroup(),
-        countries: L.layerGroup()
+        countries: L.layerGroup(),
+        weather: L.layerGroup()
     };
     let globalCountryData = {};
 
@@ -174,12 +184,14 @@
         layers.countries.addTo(map);
         layers.ports.addTo(map);
         layers.shipments.addTo(map);
+        layers.weather.addTo(map);
 
         // Layer Control
         L.control.layers(null, {
             "Active Shipments": layers.shipments,
             "World Ports": layers.ports,
-            "Country Risk Layer": layers.countries
+            "Country Risk Layer": layers.countries,
+            "Weather Alerts": layers.weather
         }, { position: 'bottomleft', collapsed: false }).addTo(map);
 
         // Fetch GeoJSON for Countries first, then map data
@@ -209,6 +221,7 @@
                 renderPorts(data.ports);
                 renderShipments(data.shipments);
                 renderAIPanel(data.aiDecisions);
+                if(data.weatherAlerts) renderWeatherAlerts(data.weatherAlerts);
             })
             .catch(error => console.error('Map Data Error:', error));
     }
@@ -239,24 +252,75 @@
                     mouseout: function(e) {
                         layers.countries.resetStyle(e.target);
                     },
-                    click: function(e) {
+                    click: async function(e) {
                         const name = feature.properties.name;
-                        const risk = globalCountryData[name] || { score: 10, level: 'Low', gdp: 'N/A', inflation: 'N/A' };
+                        const risk = globalCountryData[name] || { score: Math.floor(Math.random() * 30) + 10, level: 'Low' }; // Mock dynamic score if not found
+                        if(risk.score > 60) risk.level = 'High';
+                        else if(risk.score > 35) risk.level = 'Medium';
                         
-                        const popupContent = `
-                            <div style="background: var(--bg-navy); color: white; padding: 10px; border-radius: 8px;">
-                                <h6 style="color: var(--cyan-glow); margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 4px;">${name}</h6>
-                                <div style="font-size: 12px; line-height: 1.6;">
-                                    <strong>Risk Score:</strong> <span style="color: ${risk.score > 50 ? 'red' : 'lightgreen'}">${risk.score} (${risk.level})</span><br>
-                                    <strong>GDP:</strong> ${risk.gdp}<br>
-                                    <strong>Inflation:</strong> ${risk.inflation}<br>
-                                </div>
-                            </div>
-                        `;
-                        L.popup({ className: 'glass-popup' })
+                        const lat = e.latlng.lat;
+                        const lng = e.latlng.lng;
+                        
+                        // Tampilkan loading popup
+                        let popup = L.popup({ className: 'glass-popup' })
                             .setLatLng(e.latlng)
-                            .setContent(popupContent)
+                            .setContent(`
+                                <div style="background: rgba(10,17,40,0.9); color: white; padding: 15px; border-radius: 8px; text-align:center; min-width: 150px; border: 1px solid rgba(255,255,255,0.1);">
+                                    <div class="spinner-border text-cyan-glow spinner-border-sm mb-2" role="status" style="color: #0dcaf0;"></div>
+                                    <div style="font-size: 13px;">Memindai Satelit Cuaca...</div>
+                                </div>
+                            `)
                             .openOn(map);
+
+                        try {
+                            const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=weather_code,wind_speed_10m,precipitation`);
+                            const wData = await wRes.json();
+                            
+                            let wind = "N/A", rain = "N/A", isStorm = "<span class='text-success'>Aman</span>";
+                            if(wData.current) {
+                                wind = wData.current.wind_speed_10m;
+                                rain = wData.current.precipitation;
+                                const wc = wData.current.weather_code;
+                                
+                                if(wc >= 95 || wind > 50) { 
+                                    isStorm = "<strong class='text-danger'>Ya (Badai Petir/Topan)</strong>"; 
+                                } else if (wc >= 61) {
+                                    isStorm = "<span class='text-warning'>Hujan Lebat</span>";
+                                }
+                            }
+                            
+                            const popupContent = `
+                                <div style="background: rgba(10,17,40,0.95); color: white; padding: 15px; border-radius: 8px; min-width: 220px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                                    <h6 style="color: #0dcaf0; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; font-weight:bold; font-size: 15px;">
+                                        <span class="material-symbols-outlined fs-6 align-middle me-1">public</span> ${name}
+                                    </h6>
+                                    <div style="font-size: 13px; line-height: 2;">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="text-muted"><span class="material-symbols-outlined fs-7 align-middle me-1">security</span>Risk Score</span>
+                                            <strong style="color: ${risk.score > 50 ? '#EF4444' : (risk.score > 35 ? '#F59E0B' : '#22C55E')}; font-size: 14px;">${risk.score} / 100</strong>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-secondary border-opacity-25">
+                                            <span class="text-muted"><span class="material-symbols-outlined fs-7 align-middle me-1">water_drop</span>Hujan</span>
+                                            <strong class="text-white">${rain} mm</strong>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="text-muted"><span class="material-symbols-outlined fs-7 align-middle me-1">air</span>Angin</span>
+                                            <strong class="text-white">${wind} km/h</strong>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-secondary border-opacity-25">
+                                            <span class="text-muted"><span class="material-symbols-outlined fs-7 align-middle me-1">thunderstorm</span>Badai</span>
+                                            <span>${isStorm}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            popup.setContent(popupContent);
+                        } catch(e) {
+                            popup.setContent(`<div style="background: rgba(10,17,40,0.9); color: white; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">Gagal memuat satelit untuk ${name}</div>`);
+                        }
                     }
                 });
             }
@@ -335,6 +399,41 @@
         ports.forEach(port => {
             const marker = L.marker([port.lat, port.lng], { icon: portIcon }).addTo(layers.ports);
             marker.bindTooltip(`<div style="font-family: 'Inter', sans-serif;"><b>${port.name}</b><br>Congestion: ${port.congestion}</div>`);
+        });
+    }
+
+    function renderWeatherAlerts(alerts) {
+        layers.weather.clearLayers();
+
+        const stormIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: `<div style="background: rgba(239, 68, 68, 0.1); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" class="storm-pulse">
+                    <div style="background: var(--danger, #EF4444); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px #EF4444;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">storm</span>
+                    </div>
+                   </div>`,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+
+        alerts.forEach(alert => {
+            // Draw marker
+            const marker = L.marker([alert.lat, alert.lng], { icon: stormIcon }).addTo(layers.weather);
+            marker.bindTooltip(`
+                <div style="font-family: 'Inter', sans-serif; max-width: 200px; white-space: normal;">
+                    <b class="text-danger">${alert.type}</b> (${alert.severity})<br>
+                    <span style="font-size: 11px;">${alert.description}</span>
+                </div>
+            `);
+            
+            // Draw Danger Radius Circle
+            L.circle([alert.lat, alert.lng], {
+                color: '#EF4444',
+                fillColor: '#EF4444',
+                fillOpacity: 0.15,
+                weight: 1,
+                radius: alert.radius * 1000 // meters
+            }).addTo(layers.weather);
         });
     }
 

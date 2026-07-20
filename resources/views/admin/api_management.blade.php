@@ -16,7 +16,7 @@
         </button>
     </div>
 
-    <x-card title="Connected External APIs" icon="hub" glow="cyan">
+    <x-card title="Connected External APIs" icon="hub" glow="cyan" class="h-auto">
         <div class="table-responsive p-3">
             <table class="table table-dark table-hover align-middle mb-0">
                 <thead>
@@ -56,11 +56,15 @@
                         <td>
                             <button class="btn btn-sm btn-outline-info py-0 px-2" title="Test Connection"><span class="material-symbols-outlined fs-6">network_check</span></button>
                             <button class="btn btn-sm btn-outline-warning py-0 px-2" title="Configure"><span class="material-symbols-outlined fs-6">settings</span></button>
-                            @if($api['status'] == 'Active')
-                                <button class="btn btn-sm btn-outline-danger py-0 px-2" title="Disable"><span class="material-symbols-outlined fs-6">power_off</span></button>
-                            @else
-                                <button class="btn btn-sm btn-outline-success py-0 px-2" title="Enable"><span class="material-symbols-outlined fs-6">power</span></button>
-                            @endif
+                            <form action="{{ route('admin.api-management.toggle') }}" method="POST" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="api_name" value="{{ $api['name'] }}">
+                                @if($api['status'] == 'Active')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Disable"><span class="material-symbols-outlined fs-6">power_off</span></button>
+                                @else
+                                    <button type="submit" class="btn btn-sm btn-outline-success py-0 px-2" title="Enable"><span class="material-symbols-outlined fs-6">power</span></button>
+                                @endif
+                            </form>
                         </td>
                     </tr>
                     @endforeach

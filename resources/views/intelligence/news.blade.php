@@ -101,6 +101,20 @@
     color: var(--news-text-muted) !important;
 }
 
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .news-filter-btn {
     background: transparent;
     color: var(--news-text-muted);
@@ -286,13 +300,15 @@ async function fetchNews() {
             query += ` ${getCountryName()}`; 
         }
         
-        const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=7&apikey=${GNEWS_API_KEY}`;
+        // Fetch from our internal Laravel Google News proxy route
+        const countryParam = currentCountry !== 'any' ? getCountryName() : '';
+        const url = `/intelligence/google-news?q=${encodeURIComponent(query)}&country=${encodeURIComponent(countryParam)}&category=${encodeURIComponent(currentCategory)}`;
         const response = await fetch(url);
         const data = await response.json();
         
-        // GNews returns an array of errors if something is wrong (e.g., quota exceeded)
-        if (data.errors) {
-            throw new Error(data.errors[0] || 'Unknown GNews API Error');
+        // Handle errors
+        if (!data.success || data.errors) {
+            throw new Error(data.errors ? data.errors[0] : 'Unknown News API Error');
         }
         
         if (data.articles && data.articles.length > 0) {
@@ -304,25 +320,25 @@ async function fetchNews() {
                     <span class="material-symbols-outlined text-muted mb-3" style="font-size: 4rem;">news_off</span>
                     <h5 class="text-adaptive fw-bold">No Recent News Found</h5>
                     <p class="text-adaptive-muted text-center" style="max-width: 400px;">
-                        We couldn't find any recent real news from GNews regarding <b>${currentCategory}</b> in <b>${getCountryName() || 'the world'}</b>. Try selecting a different category or country.
+                        We couldn't find any recent real news from Google News regarding <b>${currentCategory}</b> in <b>${getCountryName() || 'the world'}</b>. Try selecting a different category or country.
                     </p>
                 </div>
             `;
         }
         
     } catch (error) {
-        console.error("GNews API fetch failed:", error);
+        console.error("News API fetch failed:", error);
         
         // Explicitly show the API Error to the user instead of secretly falling back to mock data
         grid.innerHTML = `
             <div class="col-12 d-flex flex-column align-items-center justify-content-center h-100" style="min-height: 400px;">
                 <span class="material-symbols-outlined text-danger mb-3" style="font-size: 4rem;">warning</span>
-                <h5 class="text-adaptive fw-bold text-danger">GNews API Connection Error</h5>
+                <h5 class="text-adaptive fw-bold text-danger">Google News API Connection Error</h5>
                 <div class="bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-3 p-3 my-3 text-center" style="max-width: 600px;">
                     <code class="text-danger fw-bold fs-6">${error.message}</code>
                 </div>
                 <p class="text-adaptive-muted text-center mb-4" style="max-width: 500px;">
-                    This error is returned directly from the GNews server. If you have reached your daily quota of 100 requests (Free Tier), please try again tomorrow or switch to the Simulation Mode below.
+                    Failed to fetch data from the server.
                 </p>
                 <button class="btn btn-outline-info rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2 hover-glow" onclick="renderNews(getMockNews('${currentCategory}', '${currentCountry}'))">
                     <span class="material-symbols-outlined fs-5">science</span> Load Simulation Data
@@ -336,27 +352,94 @@ function renderNews(articles) {
     const grid = document.getElementById('newsGrid');
     grid.innerHTML = '';
     
+    const fallbackImages = {
+        'Logistics': [
+            'https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1501523460185-2aa5d2a0f981?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1587293852726-70cdb56c2866?q=80&w=1200&auto=format&fit=crop'
+        ],
+        'Trade': [
+            'https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1200&auto=format&fit=crop'
+        ],
+        'Shipping': [
+            'https://images.unsplash.com/photo-1494412519320-aa613dfb7738?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1551281473-cbcf138e4a9e?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1534008897995-27a23e859048?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1586528116311-ad8ed7c83a7f?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1605647540924-852290f6b0d5?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1503431128871-16fd15a4e4d5?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1585038332194-469a47313a1a?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1614030126544-b2580b016335?q=80&w=1200&auto=format&fit=crop'
+        ],
+        'Economy': [
+            'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1535320903710-d993d3d77d29?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1604594849809-dfedbc827105?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?q=80&w=1200&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop'
+        ]
+    };
+    
     articles.forEach((article, index) => {
         const dateStr = new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        // Use a highly reliable fallback image if the original API image fails or is missing
-        const fallbackImg = 'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=1200&auto=format&fit=crop';
+        // Use a categorized, index-based fallback image if the original API image fails or is missing
+        const categoryImgArray = fallbackImages[currentCategory] || fallbackImages['Logistics'];
+        const fallbackImg = categoryImgArray[index % categoryImgArray.length];
         const imgUrl = article.image && article.image.trim() !== '' ? article.image : fallbackImg;
+        
+        const sentiment = article.sentiment;
+        let sentimentBadge = '';
+        if (sentiment) {
+            if (sentiment.label === 'Positive') sentimentBadge = `<span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50"><span class="material-symbols-outlined fs-8 align-middle">trending_up</span> Positive ${sentiment.positive_pct}%</span>`;
+            else if (sentiment.label === 'Negative') sentimentBadge = `<span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50"><span class="material-symbols-outlined fs-8 align-middle">trending_down</span> Negative ${sentiment.negative_pct}%</span>`;
+            else sentimentBadge = `<span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50"><span class="material-symbols-outlined fs-8 align-middle">horizontal_rule</span> Neutral ${sentiment.neutral_pct}%</span>`;
+        }
 
         if (index === 0) {
             // Featured Article (Full Width Hero) - Text stays white here due to dark overlay
             const html = `
                 <div class="col-12 mb-2">
                     <a href="${article.url}" target="_blank" class="featured-news-card">
-                        <img src="${imgUrl}" class="bg-img" onerror="this.onerror=null; this.src='${fallbackImg}'">
+                        <img src="${imgUrl}" class="bg-img" onload="if((this.naturalWidth == 1 || this.naturalWidth == 0) && this.src !== '${fallbackImg}') { this.src='${fallbackImg}'; }" onerror="this.onerror=null; this.src='${fallbackImg}'">
                         <div class="overlay"></div>
                         <div class="content">
                             <div class="d-flex align-items-center gap-3 mb-3">
                                 <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold" style="box-shadow: 0 0 10px rgba(13,202,240,0.5);">FEATURED</span>
                                 <span class="badge bg-dark bg-opacity-75 border border-secondary px-3 py-2 rounded-pill text-white">${article.source.name}</span>
                                 <span class="text-white text-opacity-75 fs-7 d-flex align-items-center gap-1"><span class="material-symbols-outlined fs-6">schedule</span> ${dateStr}</span>
+                                ${sentimentBadge}
                             </div>
                             <h2 class="text-white fw-bold display-6 mb-3 text-glow" style="max-width: 800px; line-height: 1.2;">${article.title}</h2>
                             <p class="text-white text-opacity-75 fs-5 mb-0 line-clamp-2" style="max-width: 700px;">${article.description}</p>
+                            
+                            <!-- Sentiment Bar -->
+                            ${sentiment ? `
+                            <div class="mt-4" style="max-width: 400px;">
+                                <div class="d-flex justify-content-between fs-8 text-white text-opacity-75 mb-1">
+                                    <span>AI Sentiment Analysis (Lexicon Based)</span>
+                                </div>
+                                <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.1);">
+                                    <div class="progress-bar bg-success" style="width: ${sentiment.positive_pct}%" title="Positive: ${sentiment.positive_score} words"></div>
+                                    <div class="progress-bar bg-secondary" style="width: ${sentiment.neutral_pct}%"></div>
+                                    <div class="progress-bar bg-danger" style="width: ${sentiment.negative_pct}%" title="Negative: ${sentiment.negative_score} words"></div>
+                                </div>
+                            </div>
+                            ` : ''}
                         </div>
                     </a>
                 </div>
@@ -369,12 +452,25 @@ function renderNews(articles) {
                     <div class="news-grid-card">
                         <div class="img-wrapper">
                             <span class="news-badge">${article.source.name}</span>
-                            <img src="${imgUrl}" onerror="this.onerror=null; this.src='${fallbackImg}'">
+                            <img src="${imgUrl}" onload="if((this.naturalWidth == 1 || this.naturalWidth == 0) && this.src !== '${fallbackImg}') { this.src='${fallbackImg}'; }" onerror="this.onerror=null; this.src='${fallbackImg}'">
                         </div>
                         <div class="p-4 d-flex flex-column flex-grow-1">
-                            <span class="text-info fs-8 fw-bold text-uppercase mb-2 tracking-wider">${currentCategory}</span>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="text-info fs-8 fw-bold text-uppercase tracking-wider">${currentCategory}</span>
+                                ${sentimentBadge}
+                            </div>
                             <h5 class="text-adaptive fw-bold mb-3 lh-base line-clamp-2" style="min-height: 48px;">${article.title}</h5>
                             <p class="text-adaptive-muted fs-7 mb-4 flex-grow-1 line-clamp-3">${article.description}</p>
+                            
+                            ${sentiment ? `
+                            <div class="mb-3">
+                                <div class="progress" style="height: 4px; background-color: rgba(255,255,255,0.05);">
+                                    <div class="progress-bar bg-success" style="width: ${sentiment.positive_pct}%"></div>
+                                    <div class="progress-bar bg-secondary" style="width: ${sentiment.neutral_pct}%"></div>
+                                    <div class="progress-bar bg-danger" style="width: ${sentiment.negative_pct}%"></div>
+                                </div>
+                            </div>
+                            ` : ''}
                             
                             <div class="mt-auto pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
                                 <span class="text-adaptive-muted fs-8">${dateStr}</span>
@@ -471,7 +567,7 @@ function getMockNews(category, countryCode) {
         
         mock.push({
             title: categoryTitles[i % categoryTitles.length],
-            description: `This is an exclusive AI-generated mock description for ${category} originating from ${countryName}. Real GNews API results will seamlessly appear here once a valid API key is configured.`,
+            description: `This is an exclusive AI-generated mock description for ${category} originating from ${countryName}. Real Google News RSS results will seamlessly appear here once the connection is successful.`,
             image: categoryImages[i % categoryImages.length],
             publishedAt: new Date(Date.now() - i * 3600000 * 5).toISOString(),
             source: { name: `${countryName} Intel` },
